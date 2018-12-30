@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="基于netty的轻量级框架">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="ZouFeng">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="vert.x源码解析"/>
+    
+
+    <!--Open Graph Description-->
+    
+        <meta property="og:description" content="基于netty的轻量级框架" />
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="zoufeng_blog"/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+    <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>vert.x源码解析 - zoufeng_blog</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Google Analytics -->
+    
+
+
+</head>
+
+
+<body>
+
+<div class="bg-gradient"></div>
+<div class="bg-pattern"></div>
+
+<!-- Menu -->
+<!--Menu Links and Overlay-->
+<div class="menu-bg">
+    <div class="menu-container">
+        <ul>
+            
+            <li class="menu-item">
+                <a href="/">
+                    Home
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/archives">
+                    Archives
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/about.html">
+                    About
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/tags">
+                    Tags
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/categories">
+                    Categories
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/contact.html">
+                    Contact
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+<!--Hamburger Icon-->
+<nav>
+    <a href="#menu"></a>
+</nav>
+
+<div class="container">
+
+    <!-- Main Content -->
+    <div class="row">
+    <div class="col-sm-12">
+
+        <!--Title and Logo-->
+        <header>
+    <div class="logo">
+        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
+        
+    </div>
+</header>
+
+        <section class="main">
+            
+<div class="post">
+
+    <div class="post-header">
+        <h1 class="title">
+            <a href="/2018/08/21/vert-x源码解析/">
+                vert.x源码解析
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-08-21</span>
+            
+            
+            
+                <span class="category">
+                    <a href="/categories/netty/">netty</a>
+                </span>
+            
+        </div>
+    </div>
+	
+	<div class="entry" style="position:fixed;left:10px" >
+			<p class="show-toc-btn" id="show-toc-btn" onclick="showToc();" style="display:block">
+				<span class="btn-bg"></span>
+				<span class="btn-text">文章导航</span>
+			</p>
+		<div id="toc-article" class="toc-article" style="display:none">
+			<span id="toc-close" class="toc-close" title="隐藏导航" onclick="showBtn();">x</span>
+			<strong class="toc-title">文章目录</strong>
+			<ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#vertx是什么"><span class="post-toc-number">1.</span> <span class="post-toc-text">vertx是什么</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#一、vertx结构"><span class="post-toc-number">2.</span> <span class="post-toc-text">一、vertx结构</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#1-1Verticle"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">1.1Verticle</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#标准Verticle"><span class="post-toc-number">2.1.1.</span> <span class="post-toc-text">标准Verticle</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#单线程-Work-Verticle"><span class="post-toc-number">2.1.2.</span> <span class="post-toc-text">单线程 Work Verticle</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#1-1-3-多线程的Work-Verticle"><span class="post-toc-number">2.1.3.</span> <span class="post-toc-text">1.1.3 多线程的Work Verticle</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#verticles的部署"><span class="post-toc-number">2.1.4.</span> <span class="post-toc-text">verticles的部署</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#怎么样找到Verticle-Factories"><span class="post-toc-number">2.1.5.</span> <span class="post-toc-text">怎么样找到Verticle Factories</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#ShareDate"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">ShareDate</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Context"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">Context</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Handler"><span class="post-toc-number">2.4.</span> <span class="post-toc-text">Handler</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#二、vertx示例demo"><span class="post-toc-number">3.</span> <span class="post-toc-text">二、vertx示例demo</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#三、vertx实例化的过程"><span class="post-toc-number">4.</span> <span class="post-toc-text">三、vertx实例化的过程</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#四、vertx如何发布一个verticle"><span class="post-toc-number">5.</span> <span class="post-toc-text">四、vertx如何发布一个verticle</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#五、verticle如何绑定线程"><span class="post-toc-number">6.</span> <span class="post-toc-text">五、verticle如何绑定线程</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Context的一些思考"><span class="post-toc-number">6.1.</span> <span class="post-toc-text">Context的一些思考</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#阻塞代码和WorkVerticle"><span class="post-toc-number">6.2.</span> <span class="post-toc-text">阻塞代码和WorkVerticle</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#1-vertx-executeBlocking"><span class="post-toc-number">6.2.1.</span> <span class="post-toc-text">1.vertx.executeBlocking()</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#2-workVerticle-这里指单线程的"><span class="post-toc-number">6.2.2.</span> <span class="post-toc-text">2.workVerticle(这里指单线程的)</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#六、verticle如何与eventBus交互"><span class="post-toc-number">7.</span> <span class="post-toc-text">六、verticle如何与eventBus交互</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#七、vertx集群"><span class="post-toc-number">8.</span> <span class="post-toc-text">七、vertx集群</span></a></li></ol>
+		</div>
+		<script type="text/javascript">
+			function showToc(){
+				var toc_article = document.getElementById("toc-article");
+				var show_toc_btn = document.getElementById("show-toc-btn");
+				toc_article.setAttribute("style","display:block");
+				show_toc_btn.setAttribute("style","display:none");
+			};
+			function showBtn(){
+				var toc_article = document.getElementById("toc-article");
+				var show_toc_btn = document.getElementById("show-toc-btn");
+				toc_article.setAttribute("style","display:none");
+				show_toc_btn.setAttribute("style","display:block");
+			};
+		</script>
+	
+    </div>
+	
+	
+	<!-- 文章目录
+	<div class="entry" style="position:fixed;right:10px" >
+		<ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#vertx是什么"><span class="post-toc-number">1.</span> <span class="post-toc-text">vertx是什么</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#一、vertx结构"><span class="post-toc-number">2.</span> <span class="post-toc-text">一、vertx结构</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#1-1Verticle"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">1.1Verticle</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#标准Verticle"><span class="post-toc-number">2.1.1.</span> <span class="post-toc-text">标准Verticle</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#单线程-Work-Verticle"><span class="post-toc-number">2.1.2.</span> <span class="post-toc-text">单线程 Work Verticle</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#1-1-3-多线程的Work-Verticle"><span class="post-toc-number">2.1.3.</span> <span class="post-toc-text">1.1.3 多线程的Work Verticle</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#verticles的部署"><span class="post-toc-number">2.1.4.</span> <span class="post-toc-text">verticles的部署</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#怎么样找到Verticle-Factories"><span class="post-toc-number">2.1.5.</span> <span class="post-toc-text">怎么样找到Verticle Factories</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#ShareDate"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">ShareDate</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Context"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">Context</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Handler"><span class="post-toc-number">2.4.</span> <span class="post-toc-text">Handler</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#二、vertx示例demo"><span class="post-toc-number">3.</span> <span class="post-toc-text">二、vertx示例demo</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#三、vertx实例化的过程"><span class="post-toc-number">4.</span> <span class="post-toc-text">三、vertx实例化的过程</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#四、vertx如何发布一个verticle"><span class="post-toc-number">5.</span> <span class="post-toc-text">四、vertx如何发布一个verticle</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#五、verticle如何绑定线程"><span class="post-toc-number">6.</span> <span class="post-toc-text">五、verticle如何绑定线程</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Context的一些思考"><span class="post-toc-number">6.1.</span> <span class="post-toc-text">Context的一些思考</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#阻塞代码和WorkVerticle"><span class="post-toc-number">6.2.</span> <span class="post-toc-text">阻塞代码和WorkVerticle</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#1-vertx-executeBlocking"><span class="post-toc-number">6.2.1.</span> <span class="post-toc-text">1.vertx.executeBlocking()</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#2-workVerticle-这里指单线程的"><span class="post-toc-number">6.2.2.</span> <span class="post-toc-text">2.workVerticle(这里指单线程的)</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#六、verticle如何与eventBus交互"><span class="post-toc-number">7.</span> <span class="post-toc-text">六、verticle如何与eventBus交互</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#七、vertx集群"><span class="post-toc-number">8.</span> <span class="post-toc-text">七、vertx集群</span></a></li></ol>
+    </div> -->
+
+    <div class="content">
+
+        <!-- Gallery -->
+        
+
+        <!-- Post Content -->
+        <h2 id="vertx是什么"><a href="#vertx是什么" class="headerlink" title="vertx是什么"></a>vertx是什么</h2><p>前面我们有分析过netty的源码，netty是一个异步非阻塞的NIO框架，主要是用于网络编程。而vertx是基于netty构建的应用平台,复用netty的EvenLoopGroup实现的reactor模型。是一个轻量级高性能的异步框架。</p>
+<a id="more"></a>
+<h2 id="一、vertx结构"><a href="#一、vertx结构" class="headerlink" title="一、vertx结构"></a>一、vertx结构</h2><p>这节内容主要来自官方文档</p>
+<h3 id="1-1Verticle"><a href="#1-1Verticle" class="headerlink" title="1.1Verticle"></a>1.1Verticle</h3><p>如果说vertx是一个操作系统，verticle就是运行在上面的软件，verticle是需要部署在vertx实例上运行的。<br>一个vertx实例可以有多个verticle，不同的verticle通过EventBus传递消息verticle有父子verticles概念</p>
+<p>Verticle三种类型</p>
+<h4 id="标准Verticle"><a href="#标准Verticle" class="headerlink" title="标准Verticle"></a>标准Verticle</h4><p>标准verticles当创建和调用start方法时分配一个event loop。调用执行都在相同的event loop上。</p>
+<p>这意味着我们可以保证您的verticles实例中的所有代码总是都执行相同的事件循环上 (只要你不调用它自己创建的线程!)。</p>
+<p>这意味着可以在程序里作为单线程编写所有的代码，把担心线程和扩展的问题交给Vert.x。没有更多令人担忧的同步和更多不稳定的问题，也避免了多线程死锁的问题</p>
+<h4 id="单线程-Work-Verticle"><a href="#单线程-Work-Verticle" class="headerlink" title="单线程 Work Verticle"></a>单线程 Work Verticle</h4><p>Worker verticles就像标准的verticles一样，但不使用事件循环执行，从 Vert.x worker线程池使用一个线程。</p>
+<p>worker verticles 专为调用阻塞的代码，因为他们不会阻止任何事件循环。<br>如果你不想使用worker verticles运行阻塞的代码，可以在事件循环上直接运行内联阻塞代<br>码。</p>
+<p>如果您要以worker verticles的方式部署verticle，需要调用 setWorker.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">DeploymentOptions options = <span class="keyword">new</span> DeploymentOptions().setWorker(<span class="keyword">true</span>);</span><br><span class="line">vertx.deployVerticle(<span class="string">"com.mycompany.MyOrderProcessorVerticle"</span>, options);</span><br></pre></td></tr></table></figure>
+<p>Worker verticle实例永远不会有多个线程并发执行 ，但可以在不同的时间由不同的线程执行。</p>
+<h4 id="1-1-3-多线程的Work-Verticle"><a href="#1-1-3-多线程的Work-Verticle" class="headerlink" title="1.1.3 多线程的Work Verticle"></a>1.1.3 多线程的Work Verticle</h4><p>多线程的worker verticle就像正常worker verticle，但它是可以由不同的线程同时执行。</p>
+<p><strong>警告</strong></p>
+<blockquote>
+<p>多线程的worker verticle 是一项高级的功能，大多数应用程序会对他们来说没有必要。因为在这些 verticles 并发，你必须非常小心，使用标准的 Java 技术的多线程编程，以保持verticle一致状态。</p>
+</blockquote>
+<h4 id="verticles的部署"><a href="#verticles的部署" class="headerlink" title="verticles的部署"></a>verticles的部署</h4><ul>
+<li>verticle实例化<br>verticles名称用于查找特定的VerticleFactory ，将用来实例化实际verticles实例。</li>
+</ul>
+<p>不同verticle工厂可用于实例化不同语言verticles和其他各种原因，例如装载服务和从Maven在运行时得到verticles。<br>这允许您从 Vert.x 支持的任何语言编写的其他语言verticles部署 </p>
+<ul>
+<li>指定verticle实例数</li>
+</ul>
+<p>在部署时verticle使用verticle的名称，可以指定您要部署的verticle实例的数目:</p>
+<blockquote>
+<p>DeploymentOptions options = new DeploymentOptions().setInstances(16);<br>vertx.deployVerticle(“com.mycompany.MyOrderProcessorVerticle”, options);<br>用于跨多个内核轻松扩展。例如，您可能有 web 服务器verticle部署，服务器是多核的，你想要部署多个实例来充分利用所有核心。</p>
+</blockquote>
+<h4 id="怎么样找到Verticle-Factories"><a href="#怎么样找到Verticle-Factories" class="headerlink" title="怎么样找到Verticle Factories"></a>怎么样找到Verticle Factories</h4><ul>
+<li>ServiceLoader 在 Vert.x 启动时从类路径中加载并注册。(spi方式)</li>
+<li>通过编程方式注册和注销Verticle factories，使用registerVerticleFactory和unregisterVerticleFactory。（编码注册）</li>
+</ul>
+<h3 id="ShareDate"><a href="#ShareDate" class="headerlink" title="ShareDate"></a>ShareDate</h3><p>Shared data contains functionality that allows you to safely share data between different parts of your application, or different applications in the same Vert.x instance or across a cluster of Vert.x instances.</p>
+<p>Shared data provides:</p>
+<ul>
+<li>synchronous shared maps (local)</li>
+</ul>
+<p>本质就是一个ConcurrntHashMap&lt;String,LocalMap&lt;K,V&gt;&gt;<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">LocalMap&lt;String, String&gt; map1 = sd.getLocalMap(<span class="string">"mymap1"</span>);</span><br><span class="line"></span><br><span class="line">map1.put(<span class="string">"foo"</span>, <span class="string">"bar"</span>); <span class="comment">// Strings are immutable so no need to copy</span></span><br><span class="line"></span><br><span class="line">LocalMap&lt;String, Buffer&gt; map2 = sd.getLocalMap(<span class="string">"mymap2"</span>);</span><br><span class="line"></span><br><span class="line">map2.put(<span class="string">"eek"</span>, Buffer.buffer().appendInt(<span class="number">123</span>)); <span class="comment">// This buffer will be copied before adding to map</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Then... in another part of your application:</span></span><br><span class="line"></span><br><span class="line">map1 = sd.getLocalMap(<span class="string">"mymap1"</span>);</span><br><span class="line"></span><br><span class="line">String val = map1.get(<span class="string">"foo"</span>);</span><br><span class="line"></span><br><span class="line">map2 = sd.getLocalMap(<span class="string">"mymap2"</span>);</span><br><span class="line"></span><br><span class="line">Buffer buff = map2.get(<span class="string">"eek"</span>);</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><p>asynchronous maps (local or cluster-wide)</p>
+</li>
+<li><p>asynchronous locks (local or cluster-wide)</p>
+</li>
+<li><p>asynchronous counters (local or cluster-wide)</p>
+<h3 id="Context"><a href="#Context" class="headerlink" title="Context"></a>Context</h3><p>当Vert.x提供一个事件的处理程序或调用Verticle的开始或停止的方法，执行与Context相关联。类似于netty的ChannelContext，不过Vertx的Context是与线程绑定，netty的ChannelContext是和Channel绑定，有一丢丢的区别。</p>
+</li>
+</ul>
+<p>因为一般Context是event-loop context 绑定特定的事件循环线程。因此，对于这方面的执行总是发生在该完全相同的事件循环线程。</p>
+<p>若要获得context，请使用getOrCreateContext方法:<br>Context context = vertx.getOrCreateContext();<br>如果当前线程具有一个与它相关联的context，它重复使用context对象。如果不创建新实例的context。您可以测试您取得的context的类型:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Context context = vertx.getOrCreateContext();</span><br><span class="line"><span class="keyword">if</span> (context.isEventLoopContext()) &#123;</span><br><span class="line">System.out.println(<span class="string">"Context attached to Event Loop"</span>);</span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (context.isWorkerContext()) &#123;</span><br><span class="line">System.out.println(<span class="string">"Context attached to Worker Thread"</span>);</span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (context.isMultiThreadedWorkerContext()) &#123;</span><br><span class="line">System.out.println(<span class="string">"Context attached to Worker Thread - multi threaded worker"</span>);</span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (! Context.isOnVertxThread()) &#123;</span><br><span class="line">System.out.println(<span class="string">"Context not attached to a thread managed by vert.x"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当您取得context对象时，您可以以异步方式在此context中运行代码。换句话说，您提交相同的context，异步执行任务:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">	vertx.getOrCreateContext().runOnContext( (v) -&gt; &#123;</span><br><span class="line">		System.out.println(<span class="string">"This will be executed asynchronously in the same context"</span>);</span><br><span class="line">	&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">//源码是这样提示的 Run the task asynchronously on this same context</span></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">runOnContext</span><span class="params">(Handler&lt;Void&gt; task)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      executeAsync(task);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (RejectedExecutionException ignore) &#123;</span><br><span class="line">      <span class="comment">// Pool is already shut down</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></p>
+<p>当几个处理程序在相同的context中运行时，他们可能想要分享数据。context对象提供方法来存储和获取在context中共享的数据。例如，它可以让你通过一些行动runOnContext运行数据：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> Context context = vertx.getOrCreateContext();</span><br><span class="line">context.put(<span class="string">"data"</span>, <span class="string">"hello"</span>);</span><br><span class="line">context.runOnContext((v) -&gt; &#123;</span><br><span class="line">	String hello = context.get(<span class="string">"data"</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>context对象还可让您使用的config方法访问verticle配置。</p>
+<h3 id="Handler"><a href="#Handler" class="headerlink" title="Handler"></a>Handler</h3><p>事件的回调处理，这个回调是如何执行呢？这个问题在下面标准Verticle部署这节源码分析会解答</p>
+<p>### </p>
+<h2 id="二、vertx示例demo"><a href="#二、vertx示例demo" class="headerlink" title="二、vertx示例demo"></a>二、vertx示例demo</h2><p>简单写个vertxdemo,这个也是是我们分析源码的入口<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zoufeng</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2018/8/18</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloWorldServerVerticle3</span> <span class="keyword">extends</span> <span class="title">AbstractVerticle</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        request();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Vertx vertx = Vertx.vertx();</span><br><span class="line">        vertx.deployVerticle(HelloWorldServerVerticle3.class.getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">request</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        vertx.createHttpServer(<span class="keyword">new</span> HttpServerOptions()).requestHandler(httpServerRequest -&gt; &#123;</span><br><span class="line">            <span class="keyword">if</span> (httpServerRequest.uri().equals(<span class="string">"/hello"</span>) &amp;&amp; httpServerRequest.method().equals(HttpMethod.GET)) &#123;</span><br><span class="line">                HttpServerResponse httpServerResponse = httpServerRequest.response().setChunked(<span class="keyword">true</span>);</span><br><span class="line">                vertx.createHttpClient(<span class="keyword">new</span> HttpClientOptions()</span><br><span class="line">                        .setKeepAlive(<span class="keyword">false</span>))</span><br><span class="line">                        .request(httpServerRequest.method(), <span class="number">80</span>, <span class="string">"www.qq.com"</span>, <span class="string">"/"</span>)</span><br><span class="line">                        .handler(response -&gt; &#123;</span><br><span class="line">                            System.out.println(<span class="string">"Received response with status code "</span> + response.statusCode());</span><br><span class="line"></span><br><span class="line">                            <span class="comment">//copy header</span></span><br><span class="line">                            response.headers().forEach(entry -&gt; &#123;</span><br><span class="line">                                httpServerResponse.putHeader(entry.getKey(), entry.getValue());</span><br><span class="line">                            &#125;);</span><br><span class="line">                            <span class="comment">//copy body writeStrea</span></span><br><span class="line">                            Pump.pump(response, httpServerResponse).start();</span><br><span class="line">                        &#125;).end();</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                httpServerRequest.response().setStatusCode(<span class="number">404</span>).end(<span class="string">"not found"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;).listen(<span class="number">8089</span>, result -&gt; &#123;</span><br><span class="line">            <span class="keyword">if</span> (result.succeeded()) &#123;</span><br><span class="line">                System.out.println(<span class="string">"listen 8089 success !!"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="三、vertx实例化的过程"><a href="#三、vertx实例化的过程" class="headerlink" title="三、vertx实例化的过程"></a>三、vertx实例化的过程</h2><p>先大致罗列下时间线</p>
+<ul>
+<li>1.vertx首先获取VertxFactory，获取方式有spi或编程的方式，默认是VertxFactoryImpl直接new VertxImpl();</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">VertxFactoryImpl</span> <span class="keyword">implements</span> <span class="title">VertxFactory</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> Vertx <span class="title">vertx</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> VertxImpl();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>2.根据VertxOptions配置Vertx,什么EventLoopPoolSize,workPoolSize,eventBusOptions</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">VertxImpl(VertxOptions options) &#123;</span><br><span class="line">  <span class="keyword">this</span>(options, <span class="keyword">null</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>3.看看有没有初始化Context（默认是木有的，有就报错- -）,Transport设置啥类型，默认JDK（这里还不是很理解这个东西有啥用，先挖个坑）。</li>
+<li><p>4.启动一个checker去检测线程阻塞情况（本质是个守护线程的timer）,检测的方式很简单粗暴，内部维护一个VerxThred线程的集合，当前时间比对线程开始的执行时间，超时了就日志警告。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">BlockedThreadChecker(<span class="keyword">long</span> interval, <span class="keyword">long</span> warningExceptionTime) &#123;</span><br><span class="line">    timer = <span class="keyword">new</span> Timer(<span class="string">"vertx-blocked-thread-checker"</span>, <span class="keyword">true</span>);</span><br><span class="line">    timer.schedule(<span class="keyword">new</span> TimerTask() &#123;</span><br><span class="line">      <span class="meta">@Override</span></span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (BlockedThreadChecker.<span class="keyword">this</span>) &#123;</span><br><span class="line">          <span class="keyword">long</span> now = System.nanoTime();</span><br><span class="line">          <span class="keyword">for</span> (VertxThread thread : threads.keySet()) &#123;</span><br><span class="line">            <span class="keyword">long</span> execStart = thread.startTime();</span><br><span class="line">            <span class="keyword">long</span> dur = now - execStart;</span><br><span class="line">            <span class="keyword">final</span> <span class="keyword">long</span> timeLimit = thread.getMaxExecTime();</span><br><span class="line">            <span class="keyword">if</span> (execStart != <span class="number">0</span> &amp;&amp; dur &gt; timeLimit) &#123;</span><br><span class="line">              <span class="keyword">final</span> String message = <span class="string">"Thread "</span> + thread + <span class="string">" has been blocked for "</span> + (dur / <span class="number">1000000</span>) + <span class="string">" ms, time limit is "</span> + (timeLimit / <span class="number">1000000</span>);</span><br><span class="line">              <span class="keyword">if</span> (dur &lt;= warningExceptionTime) &#123;</span><br><span class="line">                log.warn(message);</span><br><span class="line">              &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                VertxException stackTrace = <span class="keyword">new</span> VertxException(<span class="string">"Thread blocked"</span>);</span><br><span class="line">                stackTrace.setStackTrace(thread.getStackTrace());</span><br><span class="line">                log.warn(message, stackTrace);</span><br><span class="line">              &#125;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;, interval, interval);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>5.设置eventLoopGroup，这里Vertx是拿来主义，直接用netty的NioEventLoopGroup，并设置NioEventLoopGroup处理io任务的比率。（NiOEventLoopGroup的初始化过程可以看我以前netty源码分析部分），线程数默认为两倍cpu核数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> EventLoopGroup <span class="title">eventLoopGroup</span><span class="params">(<span class="keyword">int</span> nThreads, ThreadFactory threadFactory, <span class="keyword">int</span> ioRatio)</span> </span>&#123;</span><br><span class="line">   NioEventLoopGroup eventLoopGroup = <span class="keyword">new</span> NioEventLoopGroup(nThreads, threadFactory);</span><br><span class="line">   eventLoopGroup.setIoRatio(ioRatio);</span><br><span class="line">   <span class="keyword">return</span> eventLoopGroup;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>6.设置acceptorEventLoopGroup，默认是一个线程，按照源码说法在大量的请求下，如果事件循环的接受线程和上面的循环器线程在一个线程池里容易延迟。</p>
+</li>
+<li>7.设置VertxMetrices,这里也是以SPI的方式加载</li>
+<li>8.默认初始化20线程的workerExec，20线程的internalBlockingExec，DeploymentManager（【重要的类】管理所有的VertxFactories,用来部署Verticles）</li>
+<li>9.创建并开始EventBus,默认是 new EventBusImpl(this);</li>
+<li>10.初始化ShardDataImpl</li>
+</ul>
+<p>现在Vertx初始化就干了这些，看起来好像啥的都没做，对，确实啥都没做，都是为后面的东西做准备。<br>进入下一节。</p>
+<h2 id="四、vertx如何发布一个verticle"><a href="#四、vertx如何发布一个verticle" class="headerlink" title="四、vertx如何发布一个verticle"></a>四、vertx如何发布一个verticle</h2><p>带着问题去看代码，我一直都很疑惑handler是怎么异步回调的，先压下内心的疑惑，跟下去。</p>
+<p>deployVerticle(String name)入口进入，可以看到发布Verticle这东西全部都是DeploymentManager操刀。</p>
+<ul>
+<li><p>1.获取Context,UUID给它随机生成一个DeployId.前面说过了，Context是与当前线程绑定的，默认情况下当前线程是没有Context的，没有的话就去生成一个EventLoopContext,看到这个名字其实很清晰。这个Context的是绑定一个EventLoop，而eventLoop本质就是个线程，没毛病。这个Context还承载了workPool,orderTaskQueue。有木有一种vertx的设计越来越清晰的感觉，我写到这是有了(<em>^▽^</em>)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">deployVerticle</span><span class="params">(String identifier,</span></span></span><br><span class="line"><span class="function"><span class="params">                             DeploymentOptions options,</span></span></span><br><span class="line"><span class="function"><span class="params">                             Handler&lt;AsyncResult&lt;String&gt;&gt; completionHandler)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (options.isMultiThreaded() &amp;&amp; !options.isWorker()) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"If multi-threaded then must be worker too"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    ContextImpl callingContext = vertx.getOrCreateContext();</span><br><span class="line">    ClassLoader cl = getClassLoader(options, callingContext);</span><br><span class="line">    doDeployVerticle(identifier, generateDeploymentID(), options, callingContext, callingContext, cl, completionHandler);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>2.接着DeploymentManager做了些兼容相关的东西，根据我们传的verticle名字去判断VerticleFactory是那种类型的，加载Verticle是需不需要额外的操作啥的，我们纯洁的大java目前没有这些特殊服务，咱们略过</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (iter.hasNext()) &#123;</span><br><span class="line">      VerticleFactory verticleFactory = iter.next();</span><br><span class="line">      Future&lt;String&gt; fut = Future.future();</span><br><span class="line">      <span class="keyword">if</span> (verticleFactory.requiresResolve()) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">          verticleFactory.resolve(identifier, options, cl, fut);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">          <span class="keyword">try</span> &#123;</span><br><span class="line">            fut.fail(e);</span><br><span class="line">          &#125; <span class="keyword">catch</span> (Exception ignore) &#123;</span><br><span class="line">            <span class="comment">// Too late</span></span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        fut.complete(identifier);</span><br><span class="line">      &#125;</span><br><span class="line">      fut.setHandler(ar -&gt; &#123;&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>3.突然看到一个挺开心的东西，能解决上面的一个问题，handler是怎么执行的。看下面的代码，Vertx的Future在设置handler的时会先判断这个futrue有没有完成，完成了就执行handler，没有完成就继续窝着。不过这样就有了新的疑问，没完成的futrue一般保存在哪呢，总不能不管是吧。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Future&lt;T&gt; <span class="title">setHandler</span><span class="params">(Handler&lt;AsyncResult&lt;T&gt;&gt; handler)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">boolean</span> callHandler;</span><br><span class="line">   <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">     callHandler = isComplete();</span><br><span class="line">     <span class="keyword">if</span> (!callHandler) &#123;</span><br><span class="line">       <span class="keyword">this</span>.handler = handler;</span><br><span class="line">     &#125;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">if</span> (callHandler) &#123;</span><br><span class="line">     handler.handle(<span class="keyword">this</span>);</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>4.看他设置了啥handle。这里其实不怎么好分析，说的会有点绕，讲大白话就是当自己完成时，判断Verticle的名字是不是ok的，ok的话就按配置反射生成这个Verticle的实例</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Future&lt;T&gt; <span class="title">setHandler</span><span class="params">(Handler&lt;AsyncResult&lt;T&gt;&gt; handler)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//反射生成实例</span></span><br><span class="line">Verticle[] verticles = createVerticles(verticleFactory, identifier, options.getInstances(), cl);</span><br><span class="line">                doDeploy(identifier, deploymentID, options, parentContext, callingContext, completionHandler, cl, verticles);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>5.继续跟进doDeploy方法，</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">JsonObject conf = options.getConfig() == <span class="keyword">null</span> ? <span class="keyword">new</span> JsonObject() : options.getConfig().copy(); <span class="comment">// Copy it</span></span><br><span class="line">    String poolName = options.getWorkerPoolName();</span><br><span class="line"></span><br><span class="line">    Deployment parent = parentContext.getDeployment();</span><br><span class="line">    DeploymentImpl deployment = <span class="keyword">new</span> DeploymentImpl(parent, deploymentID, identifier, options);</span><br><span class="line"></span><br><span class="line">    AtomicInteger deployCount = <span class="keyword">new</span> AtomicInteger();</span><br><span class="line">    AtomicBoolean failureReported = <span class="keyword">new</span> AtomicBoolean();</span><br><span class="line">    <span class="keyword">for</span> (Verticle verticle: verticles) &#123;</span><br><span class="line">      WorkerExecutorImpl workerExec = poolName != <span class="keyword">null</span> ? vertx.createSharedWorkerExecutor(poolName, options.getWorkerPoolSize(), options.getMaxWorkerExecuteTime()) : <span class="keyword">null</span>;</span><br><span class="line">      WorkerPool pool = workerExec != <span class="keyword">null</span> ? workerExec.getPool() : <span class="keyword">null</span>;</span><br><span class="line">      ContextImpl context = options.isWorker() ? vertx.createWorkerContext(options.isMultiThreaded(), deploymentID, pool, conf, tccl) :</span><br><span class="line">        vertx.createEventLoopContext(deploymentID, pool, conf, tccl);</span><br><span class="line"><span class="comment">//这里为每个Verticle又创建一个Context，绑定一个EventLoop,后面这个Verticle的生命周期就和这个Context绑定了</span></span><br><span class="line">      <span class="keyword">if</span> (workerExec != <span class="keyword">null</span>) &#123;</span><br><span class="line">        context.addCloseHook(workerExec);</span><br><span class="line">      &#125;</span><br><span class="line">      context.setDeployment(deployment);</span><br><span class="line">      deployment.addVerticle(<span class="keyword">new</span> VerticleHolder(verticle, context));<span class="comment">//verticleHolder记录Verticle和Context绑定关系</span></span><br><span class="line">      context.runOnContext(v -&gt; &#123;<span class="comment">//verticle在Context上运行</span></span><br><span class="line">        <span class="comment">//略</span></span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>6.其实这里就到了事件循环器的核心了,也就是netty那块的代码，以前其实分析过，现在就再来一次，也当自己复习下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">runOnContext</span><span class="params">(Handler&lt;Void&gt; task)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      executeAsync(task);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (RejectedExecutionException ignore) &#123;</span><br><span class="line">      <span class="comment">// Pool is already shut down</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">executeAsync</span><span class="params">(Handler&lt;Void&gt; task)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// No metrics, we are on the event loop.</span></span><br><span class="line">    nettyEventLoop().execute(wrapTask(<span class="keyword">null</span>, task, <span class="keyword">true</span>, <span class="keyword">null</span>));</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">protected</span> Runnable <span class="title">wrapTask</span><span class="params">(ContextTask cTask, Handler&lt;Void&gt; hTask, <span class="keyword">boolean</span> checkThread, PoolMetrics metrics)</span> </span>&#123;</span><br><span class="line">...略</span><br><span class="line"><span class="comment">//将context与当前线程绑定</span></span><br><span class="line"> setContext(current, ContextImpl.<span class="keyword">this</span>);</span><br><span class="line">        <span class="keyword">if</span> (cTask != <span class="keyword">null</span>) &#123;</span><br><span class="line">          cTask.run();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          hTask.handle(<span class="keyword">null</span>);</span><br><span class="line">        &#125;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>7.这里有个细节，wrapTask执行任务的线程绑定了一个context。而执行任务的线程本质就是eventLoop这个SingleThreadEvenExecutor单线程池。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(Runnable task)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (task == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(<span class="string">"task"</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">boolean</span> inEventLoop = <span class="keyword">this</span>.inEventLoop();</span><br><span class="line">            <span class="keyword">if</span> (inEventLoop) &#123;</span><br><span class="line">                <span class="keyword">this</span>.addTask(task);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">this</span>.startThread();<span class="comment">//当前线程要是不是这个eventLoop记录的线程就初始化线程</span></span><br><span class="line">                <span class="keyword">this</span>.addTask(task);<span class="comment">//任务加入队列，让该eventLoop的线程轮询处理</span></span><br><span class="line">                <span class="keyword">if</span> (<span class="keyword">this</span>.isShutdown() &amp;&amp; <span class="keyword">this</span>.removeTask(task)) &#123;</span><br><span class="line">                    reject();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (!<span class="keyword">this</span>.addTaskWakesUp &amp;&amp; <span class="keyword">this</span>.wakesUpForTask(task)) &#123;</span><br><span class="line">                <span class="keyword">this</span>.wakeup(inEventLoop);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>8.看看startThread如何工作，先将当前线程设置为eventLoop的线程，然后开始调用NioEventLoop的run方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">doStartThread</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">assert</span> thread == <span class="keyword">null</span>;</span><br><span class="line">        executor.execute(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                thread = Thread.currentThread();</span><br><span class="line">                <span class="keyword">if</span> (interrupted) &#123;</span><br><span class="line">                    thread.interrupt();</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">boolean</span> success = <span class="keyword">false</span>;</span><br><span class="line">                updateLastExecutionTime();</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    SingleThreadEventExecutor.<span class="keyword">this</span>.run();<span class="comment">//这里是调用了NioEventLoop的run方法</span></span><br><span class="line">                    success = <span class="keyword">true</span>;</span><br><span class="line">                &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">                    logger.warn(<span class="string">"Unexpected exception from an event executor: "</span>, t);</span><br><span class="line">                &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                  <span class="comment">//略略略</span></span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>9.NioEventLoop不停轮询Selector的事件（这里我们没有起Bootstrap去监听socket，没有这些事件）,执行taskQueue里的任务。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">switch</span> (selectStrategy.calculateStrategy(selectNowSupplier, hasTasks())) &#123;</span><br><span class="line">                    <span class="keyword">case</span> SelectStrategy.CONTINUE:</span><br><span class="line">                        <span class="keyword">continue</span>;</span><br><span class="line">                    <span class="keyword">case</span> SelectStrategy.SELECT:</span><br><span class="line">                        select(wakenUp.getAndSet(<span class="keyword">false</span>));</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">default</span>:</span><br><span class="line">                &#125;</span><br><span class="line">                cancelledKeys = <span class="number">0</span>;</span><br><span class="line">                needsToSelectAgain = <span class="keyword">false</span>;</span><br><span class="line">                <span class="keyword">final</span> <span class="keyword">int</span> ioRatio = <span class="keyword">this</span>.ioRatio;</span><br><span class="line">                <span class="keyword">if</span> (ioRatio == <span class="number">100</span>) &#123;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        processSelectedKeys();</span><br><span class="line">                    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                        <span class="comment">// Ensure we always run tasks.</span></span><br><span class="line">                        runAllTasks();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">final</span> <span class="keyword">long</span> ioStartTime = System.nanoTime();</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        processSelectedKeys();</span><br><span class="line">                    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                        <span class="comment">// Ensure we always run tasks.</span></span><br><span class="line">                        <span class="keyword">final</span> <span class="keyword">long</span> ioTime = System.nanoTime() - ioStartTime;</span><br><span class="line">                        runAllTasks(ioTime * (<span class="number">100</span> - ioRatio) / ioRatio);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">                handleLoopException(t);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// Always handle shutdown even if the loop processing threw an exception.</span></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (isShuttingDown()) &#123;</span><br><span class="line">                    closeAll();</span><br><span class="line">                    <span class="keyword">if</span> (confirmShutdown()) &#123;</span><br><span class="line">                        <span class="keyword">return</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">                handleLoopException(t);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>10.从netty回到我们的Vertx，runOnContext（）,在这里可以看到我们熟悉的Verticle的init，start的方法了,</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">context.runOnContext(v -&gt; &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">          verticle.init(vertx, context);</span><br><span class="line">          Future&lt;Void&gt; startFuture = Future.future();</span><br><span class="line">          verticle.start(startFuture);</span><br><span class="line">          startFuture.setHandler(ar -&gt; &#123;</span><br><span class="line">            <span class="keyword">if</span> (ar.succeeded()) &#123;</span><br><span class="line">              <span class="keyword">if</span> (parent != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (parent.addChild(deployment)) &#123;</span><br><span class="line">                  deployment.child = <span class="keyword">true</span>;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                  <span class="comment">// Orphan</span></span><br><span class="line">                  deployment.undeploy(<span class="keyword">null</span>);</span><br><span class="line">                  <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line">              &#125;</span><br><span class="line">              VertxMetrics metrics = vertx.metricsSPI();</span><br><span class="line">              <span class="keyword">if</span> (metrics != <span class="keyword">null</span>) &#123;</span><br><span class="line">                metrics.verticleDeployed(verticle);</span><br><span class="line">              &#125;</span><br><span class="line">              deployments.put(deploymentID, deployment);</span><br><span class="line">              <span class="keyword">if</span> (deployCount.incrementAndGet() == verticles.length) &#123;</span><br><span class="line">                reportSuccess(deploymentID, callingContext, completionHandler);</span><br><span class="line">              &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (failureReported.compareAndSet(<span class="keyword">false</span>, <span class="keyword">true</span>)) &#123;</span><br><span class="line">              deployment.rollback(callingContext, completionHandler, context, ar.cause());</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">          <span class="keyword">if</span> (failureReported.compareAndSet(<span class="keyword">false</span>, <span class="keyword">true</span>))</span><br><span class="line">            deployment.rollback(callingContext, completionHandler, context, t);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="五、verticle如何绑定线程"><a href="#五、verticle如何绑定线程" class="headerlink" title="五、verticle如何绑定线程"></a>五、verticle如何绑定线程</h2><p>这一节算上面两节内容的总结与再次思考</p>
+<p>vertx实例化过程有这么几个东西(部分)：</p>
+<ul>
+<li>EventLoopGroup 2Xcpus Threads</li>
+<li>WorkPool 20 Threads</li>
+<li>AcceptorEventLoopGroup 1 Thread 这个就是给BootStrap BossGroup用的（HttpServer）</li>
+</ul>
+<p>发布Verticle的过程中：</p>
+<ul>
+<li>1.发布Verticle实例(未反射生成实例前)，生成一个Context,这个Context关联Vertx的一个EventLoop，且默认这个Context没有internalBlockingPool和workPool，这个Context主要是用来给Mertric传数据的。这个Context和Verticle没有关系。</li>
+<li>2.生成Verticle实例后发布时，每个verticle实例都会创建一个Context(默认是EventLoopContext),context本身关联Vertx的一个EventLoop。VerticleHolder将Verticle和Context用关联起来</li>
+<li>3.Verticle实例在它关联的Context上开始运行，并且把verticle运行的生命周期封装成一个task,在这个task中，执行的线程将context和自己绑定。这里稍微有点绕，简单的说verticle是在context的EventLoop里面执行的，这个eventLoop是单线程，verticle就相当于绑定在这个线程中。而context的作用就给这个Verticle提供运行上下文。这样就有一个问题，多个verticle绑定同一个EventLoop时，他们的Context不指定的话就线程不安全了，所以执行任务的时候又在当前线程中把属于verticle的context拿进来再次绑定。Context我们可以把它类比成ThreadLocal。<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">setContext</span><span class="params">(VertxThread thread, ContextImpl context)</span> </span>&#123;</span><br><span class="line">    thread.setContext(context);</span><br><span class="line">    <span class="keyword">if</span> (!DISABLE_TCCL) &#123;</span><br><span class="line">      <span class="keyword">if</span> (context != <span class="keyword">null</span>) &#123;</span><br><span class="line">        context.setTCCL();</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        Thread.currentThread().setContextClassLoader(<span class="keyword">null</span>);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="Context的一些思考"><a href="#Context的一些思考" class="headerlink" title="Context的一些思考"></a>Context的一些思考</h3><p>前面我们知道verticle相当于是推送一个任务到eventLoop上，eventLoop内部维护一个任务队列，eventLoop自己循环去处理任务队列里的事情。这样就有问题了，要是一个任务阻塞时间太久了（这也是vertx不建议的task），不管有没有超时机制，这都会阻塞这个eventLoop处理性能。vertx肯定也考虑了这个问题，我们先看下Context的属性<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//ContextImpl的一些属性</span></span><br><span class="line"> <span class="keyword">private</span> <span class="keyword">final</span> EventLoop eventLoop;</span><br><span class="line">  <span class="keyword">protected</span> VertxThread contextThread;</span><br><span class="line">  <span class="keyword">private</span> ConcurrentMap&lt;Object, Object&gt; contextData;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">volatile</span> Handler&lt;Throwable&gt; exceptionHandler;</span><br><span class="line">  <span class="keyword">protected</span> <span class="keyword">final</span> WorkerPool workerPool;</span><br><span class="line">  <span class="keyword">protected</span> <span class="keyword">final</span> WorkerPool internalBlockingPool;</span><br><span class="line">  <span class="keyword">final</span> TaskQueue orderedTasks;</span><br><span class="line">  <span class="keyword">protected</span> <span class="keyword">final</span> TaskQueue internalOrderedTasks;</span><br></pre></td></tr></table></figure></p>
+<p>看到里面有taskQueue和workPool,还有ConcurrentMap类型的contextData，看到这里可以大致瞎猜一下是Context用线程池去处理该阻塞任务，而这个work线程池是如何处理阻塞任务呢，我们进入下一节</p>
+<h3 id="阻塞代码和WorkVerticle"><a href="#阻塞代码和WorkVerticle" class="headerlink" title="阻塞代码和WorkVerticle"></a>阻塞代码和WorkVerticle</h3><p>官方的API是有两种方式让我们运行阻塞代码</p>
+<h4 id="1-vertx-executeBlocking"><a href="#1-vertx-executeBlocking" class="headerlink" title="1.vertx.executeBlocking()"></a>1.vertx.executeBlocking()</h4><p>执行阻塞代码，执行完毕异步回调结果<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//api</span></span><br><span class="line">&lt;T&gt; <span class="function"><span class="keyword">void</span> <span class="title">executeBlocking</span><span class="params">(Handler&lt;Future&lt;T&gt;&gt; blockingCodeHandler, Handler&lt;AsyncResult&lt;T&gt;&gt; resultHandler)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//demo</span></span><br><span class="line">vertx.executeBlocking(future -&gt; &#123;</span><br><span class="line"><span class="comment">// Call some blocking API that takes a significant amount of time to return</span></span><br><span class="line">String result = someAPI.blockingMethod(<span class="string">"hello"</span>);</span><br><span class="line">future.complete(result);</span><br><span class="line">&#125;, res -&gt; &#123;</span><br><span class="line">System.out.println(<span class="string">"The result is: "</span> + res.result());</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>跟进这个方法，我们很快就能见到老熟人Context,这个和Verticle的Context差不多。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"> <span class="keyword">public</span> &lt;T&gt; <span class="function"><span class="keyword">void</span> <span class="title">executeBlocking</span><span class="params">(Handler&lt;Future&lt;T&gt;&gt; blockingCodeHandler, <span class="keyword">boolean</span> ordered,</span></span></span><br><span class="line"><span class="function"><span class="params">                                 Handler&lt;AsyncResult&lt;T&gt;&gt; asyncResultHandler)</span> </span>&#123;</span><br><span class="line">   ContextImpl context = getOrCreateContext();</span><br><span class="line">   context.executeBlocking(blockingCodeHandler, ordered, asyncResultHandler);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></p>
+<p>后面的代码就很没劲了，还以为会是线程池啥的，结果就是vertx把这个阻塞的代码扔给起其他的eventLoop，让别的eventLoop去执行。真是偷鸡啊，个人觉得专业的活还是得专业的干，生产级别的我们还是考虑WorkVerticle吧。</p>
+<h4 id="2-workVerticle-这里指单线程的"><a href="#2-workVerticle-这里指单线程的" class="headerlink" title="2.workVerticle(这里指单线程的)"></a>2.workVerticle(这里指单线程的)</h4><p>写个小demo作为入口</p>
+<blockquote>
+<p>vertx.deployVerticle(HelloWorkVerticle.class.getName(),new DeploymentOptions().setWorker(true));</p>
+</blockquote>
+<p>跟着方法进去其实和发布正常的Veticle一样，细微差别到这里开始体现<br>DeploymentManager.doDeploy()<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">WorkerExecutorImpl workerExec = poolName != <span class="keyword">null</span> ? vertx.createSharedWorkerExecutor(poolName, options.getWorkerPoolSize(), options.getMaxWorkerExecuteTime()) : <span class="keyword">null</span>;</span><br><span class="line">      WorkerPool pool = workerExec != <span class="keyword">null</span> ? workerExec.getPool() : <span class="keyword">null</span>;</span><br><span class="line">	 <span class="comment">//就这一步，根据我们的配置参数知道我们要创建一个workVerticle</span></span><br><span class="line">      ContextImpl context = options.isWorker() ? vertx.createWorkerContext(options.isMultiThreaded(), deploymentID, pool, conf, tccl) :</span><br><span class="line">        vertx.createEventLoopContext(deploymentID, pool, conf, tccl);</span><br><span class="line">      <span class="keyword">if</span> (workerExec != <span class="keyword">null</span>) &#123;</span><br><span class="line">        context.addCloseHook(workerExec);</span><br><span class="line">      &#125;</span><br><span class="line">      context.setDeployment(deployment);</span><br><span class="line">      deployment.addVerticle(<span class="keyword">new</span> VerticleHolder(verticle, context));</span><br><span class="line">      context.runOnContext(v -&gt; &#123;</span><br></pre></td></tr></table></figure></p>
+<p>创建WorkerContext和EventLoopContext区别就是workPool了,把vertx的workPool交给了workerContext,相当于所有的workerVerticle公用这个线程池。代码一目了然<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> ContextImpl <span class="title">createWorkerContext</span><span class="params">(<span class="keyword">boolean</span> multiThreaded, String deploymentID, WorkerPool workerPool, JsonObject config,</span></span></span><br><span class="line"><span class="function"><span class="params">                                         ClassLoader tccl)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (workerPool == <span class="keyword">null</span>) &#123;</span><br><span class="line">      workerPool = <span class="keyword">this</span>.workerPool;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (multiThreaded) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">new</span> MultiThreadedWorkerContext(<span class="keyword">this</span>, internalBlockingPool, workerPool, deploymentID, config, tccl);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">new</span> WorkerContext(<span class="keyword">this</span>, internalBlockingPool, workerPool, deploymentID, config, tccl);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></p>
+<p>然后看看workerVerticle是怎么runOnContext的吧<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//WorkerContext</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">executeAsync</span><span class="params">(Handler&lt;Void&gt; task)</span> </span>&#123;</span><br><span class="line">    orderedTasks.execute(wrapTask(<span class="keyword">null</span>, task, <span class="keyword">true</span>, workerPool.metrics()), workerPool.executor());</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//TaskQueue</span></span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(Runnable task, Executor executor)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (tasks) &#123;</span><br><span class="line">      tasks.add(<span class="keyword">new</span> Task(task, executor));</span><br><span class="line">      <span class="keyword">if</span> (current == <span class="keyword">null</span>) &#123;</span><br><span class="line">        current = executor;</span><br><span class="line">        executor.execute(runner);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></p>
+<p>这里的runner在TaskQueue初始化的时候就赋了个lambda,也很简单清晰。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Runnable runner;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">TaskQueue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    runner = <span class="keyword">this</span>::run;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (; ; ) &#123;</span><br><span class="line">      <span class="keyword">final</span> Task task;</span><br><span class="line">      <span class="keyword">synchronized</span> (tasks) &#123;</span><br><span class="line">        task = tasks.poll();</span><br><span class="line">        <span class="keyword">if</span> (task == <span class="keyword">null</span>) &#123;</span><br><span class="line">          current = <span class="keyword">null</span>;</span><br><span class="line">          <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (task.exec != current) &#123;</span><br><span class="line">          tasks.addFirst(task);</span><br><span class="line">          task.exec.execute(runner);</span><br><span class="line">          current = task.exec;</span><br><span class="line">          <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        task.runnable.run();</span><br><span class="line">      &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">        log.error(<span class="string">"Caught unexpected Throwable"</span>, t);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;;</span><br></pre></td></tr></table></figure></p>
+<p>总结下就是WorkerVerticle复用Vertx的workPool去执行阻塞的任务，多线程去taskQueue取任务的时候是同步的，保证了线程安全。</p>
+<h2 id="六、verticle如何与eventBus交互"><a href="#六、verticle如何与eventBus交互" class="headerlink" title="六、verticle如何与eventBus交互"></a>六、verticle如何与eventBus交互</h2><p>挖坑</p>
+<h2 id="七、vertx集群"><a href="#七、vertx集群" class="headerlink" title="七、vertx集群"></a>七、vertx集群</h2><p>挖坑</p>
+
+    </div>
+
+    
+
+    
+        <div class="post-tags">
+            <i class="fa fa-tags" aria-hidden="true"></i>
+            <a href="/tags/笔记/">#笔记</a> <a href="/tags/netty/">#netty</a> <a href="/tags/vertx/">#vertx</a>
+        </div>
+    
+
+    <!-- Comments -->
+    
+
+</div>
+        </section>
+
+    </div>
+</div>
+
+
+</div>
+
+<!-- Footer -->
+<div class="push"></div>
+
+<footer class="footer-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
+                <h2>About</h2>
+                <p>
+                    This theme was developed by <a href="https://github.com/klugjo">Jonathan Klughertz</a>. The source code is available on Github. Create Websites. Make Magic.
+                </p>
+            </div>
+            
+    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
+        <h2>Recent Posts</h2>
+        <ul>
+            
+            <li>
+                <a class="footer-post" href="/2018/12/19/rxjava碎碎念/">rxjava设计原理</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/09/17/rxjava设计原理/">rxjava设计原理</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/09/09/vertx-circuitBreadker源码解析/">vertx-circuitBreadker源码解析</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/27/vertx-httpserver源码解析/">vertx httpserver源码解析</a>
+            </li>
+            
+        </ul>
+    </div>
+
+
+
+            
+<div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 footer-categories">
+    <h2>Categories</h2>
+    <ul>
+        
+        <li>
+            <a class="footer-post" href="/categories/emotion/">emotion</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/j-u-c/">j.u.c</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/jdk/">jdk</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/netty/">netty</a>
+        </li>
+        
+    </ul>
+</div>
+
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="list-inline footer-social-icons">
+                    
+                    <li class="list-inline-item">
+                        <a href="https://github.com/klugjo/hexo-theme-alpha-dust">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-github"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://twitter.com/?lang=en">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-twitter"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.facebook.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-facebook"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.instagram.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-instagram"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://dribbble.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-dribbble"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://plus.google.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-google-plus"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.behance.net/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-behance"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://500px.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-500px"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="mailto:test@example.com">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-envelope-o"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="\#">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-rss"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="footer-copyright">
+                    @Untitled. All right reserved | Design & Hexo <a href="http://www.codeblocq.com/">Jonathan Klughertz</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- After footer scripts -->
+
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Tween Max -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/main.js"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>

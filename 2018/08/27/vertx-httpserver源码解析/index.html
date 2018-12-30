@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="基于netty的轻量级框架">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="ZouFeng">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="vertx httpserver源码解析"/>
+    
+
+    <!--Open Graph Description-->
+    
+        <meta property="og:description" content="基于netty的轻量级框架" />
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="zoufeng_blog"/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+    <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>vertx httpserver源码解析 - zoufeng_blog</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Google Analytics -->
+    
+
+
+</head>
+
+
+<body>
+
+<div class="bg-gradient"></div>
+<div class="bg-pattern"></div>
+
+<!-- Menu -->
+<!--Menu Links and Overlay-->
+<div class="menu-bg">
+    <div class="menu-container">
+        <ul>
+            
+            <li class="menu-item">
+                <a href="/">
+                    Home
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/archives">
+                    Archives
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/about.html">
+                    About
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/tags">
+                    Tags
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/categories">
+                    Categories
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/contact.html">
+                    Contact
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+<!--Hamburger Icon-->
+<nav>
+    <a href="#menu"></a>
+</nav>
+
+<div class="container">
+
+    <!-- Main Content -->
+    <div class="row">
+    <div class="col-sm-12">
+
+        <!--Title and Logo-->
+        <header>
+    <div class="logo">
+        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
+        
+    </div>
+</header>
+
+        <section class="main">
+            
+<div class="post">
+
+    <div class="post-header">
+        <h1 class="title">
+            <a href="/2018/08/27/vertx-httpserver源码解析/">
+                vertx httpserver源码解析
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-08-27</span>
+            
+            
+            
+                <span class="category">
+                    <a href="/categories/netty/">netty</a>
+                </span>
+            
+        </div>
+    </div>
+	
+	<div class="entry" style="position:fixed;left:10px" >
+			<p class="show-toc-btn" id="show-toc-btn" onclick="showToc();" style="display:block">
+				<span class="btn-bg"></span>
+				<span class="btn-text">文章导航</span>
+			</p>
+		<div id="toc-article" class="toc-article" style="display:none">
+			<span id="toc-close" class="toc-close" title="隐藏导航" onclick="showBtn();">x</span>
+			<strong class="toc-title">文章目录</strong>
+			<ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#HttpServer-demo示例"><span class="post-toc-number">1.</span> <span class="post-toc-text">HttpServer demo示例</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#HttpServer的Boss-EventLoopGroup"><span class="post-toc-number">2.</span> <span class="post-toc-text">HttpServer的Boss EventLoopGroup</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#httpserver的Work-EventLoopGroup"><span class="post-toc-number">3.</span> <span class="post-toc-text">httpserver的Work EventLoopGroup</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#总结："><span class="post-toc-number">3.1.</span> <span class="post-toc-text">总结：</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#其他细节"><span class="post-toc-number">4.</span> <span class="post-toc-text">其他细节</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#http1-1的处理"><span class="post-toc-number">4.1.</span> <span class="post-toc-text">http1.1的处理</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#pause和resume"><span class="post-toc-number">4.2.</span> <span class="post-toc-text">pause和resume</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#参考相关"><span class="post-toc-number">4.3.</span> <span class="post-toc-text">参考相关</span></a></li></ol></li></ol>
+		</div>
+		<script type="text/javascript">
+			function showToc(){
+				var toc_article = document.getElementById("toc-article");
+				var show_toc_btn = document.getElementById("show-toc-btn");
+				toc_article.setAttribute("style","display:block");
+				show_toc_btn.setAttribute("style","display:none");
+			};
+			function showBtn(){
+				var toc_article = document.getElementById("toc-article");
+				var show_toc_btn = document.getElementById("show-toc-btn");
+				toc_article.setAttribute("style","display:none");
+				show_toc_btn.setAttribute("style","display:block");
+			};
+		</script>
+	
+    </div>
+	
+	
+	<!-- 文章目录
+	<div class="entry" style="position:fixed;right:10px" >
+		<ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#HttpServer-demo示例"><span class="post-toc-number">1.</span> <span class="post-toc-text">HttpServer demo示例</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#HttpServer的Boss-EventLoopGroup"><span class="post-toc-number">2.</span> <span class="post-toc-text">HttpServer的Boss EventLoopGroup</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#httpserver的Work-EventLoopGroup"><span class="post-toc-number">3.</span> <span class="post-toc-text">httpserver的Work EventLoopGroup</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#总结："><span class="post-toc-number">3.1.</span> <span class="post-toc-text">总结：</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#其他细节"><span class="post-toc-number">4.</span> <span class="post-toc-text">其他细节</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#http1-1的处理"><span class="post-toc-number">4.1.</span> <span class="post-toc-text">http1.1的处理</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#pause和resume"><span class="post-toc-number">4.2.</span> <span class="post-toc-text">pause和resume</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#参考相关"><span class="post-toc-number">4.3.</span> <span class="post-toc-text">参考相关</span></a></li></ol></li></ol>
+    </div> -->
+
+    <div class="content">
+
+        <!-- Gallery -->
+        
+
+        <!-- Post Content -->
+        <p>大致梳理vertx发布httpserver的流程</p>
+<a id="more"></a>
+<h1 id="HttpServer-demo示例"><a href="#HttpServer-demo示例" class="headerlink" title="HttpServer demo示例"></a>HttpServer demo示例</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zoufeng</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2018/8/18</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloWorldServerVerticle</span> <span class="keyword">extends</span> <span class="title">AbstractVerticle</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">//请求到达时通知</span></span><br><span class="line">        vertx.createHttpServer().requestHandler(req -&gt; &#123;</span><br><span class="line">            <span class="keyword">if</span> (req.uri().equals(<span class="string">"/hello"</span>) &amp;&amp; req.method().equals(HttpMethod.GET)) &#123;</span><br><span class="line">                req.response()</span><br><span class="line">                        .putHeader(<span class="string">"content-type"</span>, <span class="string">"text/plain"</span>)</span><br><span class="line">                        .end(<span class="string">"Hello World!"</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                req.response().setStatusCode(<span class="number">404</span>).end();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;).listen(<span class="number">8080</span>, result -&gt; &#123;</span><br><span class="line">            <span class="keyword">if</span> (result.succeeded()) &#123;</span><br><span class="line">                System.out.println(Thread.currentThread().getName() + <span class="string">" : listen 8080 success !!"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Vertx vertx = Vertx.vertx();</span><br><span class="line">        vertx.deployVerticle(HelloWorldServerVerticle.class.getName(), <span class="keyword">new</span> DeploymentOptions().setInstances(<span class="number">8</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>正常我们的httpServer是这样启动的，光看这个不看源码也能大概知道这个httpServer本质是netty的EventLoopGroup在监听8080端口，这样就有几个问题了：</p>
+<ul>
+<li>1.vertx的eventLoop和netty的EventLoop到底是一个什么关系？</li>
+<li>2.netty的Boos EventLoop和work EventLoop在vertx中是怎么交互的？</li>
+</ul>
+<p>下面以实例demo为例进入源码分析<br>跟进HttpServerImpl的listen（）,里面代码很长，主要还是netty Bootstrap的应用。简单描述下主要分为三部分</p>
+<ul>
+<li>1.设置HttpServer的协议，是HTTPS还是HTTP</li>
+<li><p>2.设置netty的Bootstrap,后续分析他的boss EventLoopGroup和work EventLoopGroup</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ServerBootstrap bootstrap = <span class="keyword">new</span> ServerBootstrap();</span><br><span class="line">      bootstrap.group(vertx.getAcceptorEventLoopGroup(), availableWorkers);</span><br><span class="line">      applyConnectionOptions(bootstrap);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>3.执行bootStrap的端口绑定，并添加监听回调</p>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">bindFuture = AsyncResolveConnectHelper.doBind(vertx, SocketAddress.inetSocketAddress(port, host), bootstrap);</span><br><span class="line">         bindFuture.addListener(res -&gt; &#123;</span><br><span class="line">           <span class="keyword">if</span> (res.failed()) &#123;</span><br><span class="line">             vertx.sharedHttpServers().remove(id);</span><br><span class="line">           &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">             Channel serverChannel = res.result();</span><br><span class="line">             HttpServerImpl.<span class="keyword">this</span>.actualPort = ((InetSocketAddress)serverChannel.localAddress()).getPort();</span><br><span class="line">             serverChannelGroup.add(serverChannel);</span><br><span class="line">             VertxMetrics metrics = vertx.metricsSPI();</span><br><span class="line">             <span class="keyword">this</span>.metrics = metrics != <span class="keyword">null</span> ? metrics.createMetrics(<span class="keyword">this</span>, <span class="keyword">new</span> SocketAddressImpl(port, host), options) : <span class="keyword">null</span>;</span><br><span class="line">           &#125;</span><br><span class="line">         &#125;);</span><br></pre></td></tr></table></figure>
+<h1 id="HttpServer的Boss-EventLoopGroup"><a href="#HttpServer的Boss-EventLoopGroup" class="headerlink" title="HttpServer的Boss EventLoopGroup"></a>HttpServer的Boss EventLoopGroup</h1><p>这个很简单，从源码可以看到httpServer的 Boss eventLoopGrou就是vertx初始化生成的单线程eventLoopGroup<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//vertxImpl的构造方法源码，默认100%是I/O事件，监听Selector的socket的连接事件，专门提供给netty的boss EvenLoopGroup</span></span><br><span class="line">acceptorEventLoopGroup = transport.eventLoopGroup(<span class="number">1</span>, acceptorEventLoopThreadFactory, <span class="number">100</span>);</span><br></pre></td></tr></table></figure></p>
+<p>不过现在我们有了两个问题：</p>
+<ul>
+<li>1.上面的demo里我们设置了8个verticle，按照我们代码的start()方法，这些verticle发布的时候是不是也会创建8个HttpServer？</li>
+<li>2.netty work EventLoop是怎么和vertx的EventLoop关联的？</li>
+</ul>
+<h1 id="httpserver的Work-EventLoopGroup"><a href="#httpserver的Work-EventLoopGroup" class="headerlink" title="httpserver的Work EventLoopGroup"></a>httpserver的Work EventLoopGroup</h1><p>接上面的workEventLoop,HttpServerImpl是写的availableWorkers参数</p>
+<p>参看HtttpServerImpl对这个字段的定义</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> VertxEventLoopGroup availableWorkers = <span class="keyword">new</span> VertxEventLoopGroup();</span><br></pre></td></tr></table></figure>
+<p>进入这个VertxEventLoopGroup可以看到构造后里面其实没有EvenLoop的，是一个空list</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"> <span class="keyword">private</span> <span class="keyword">int</span> pos;</span><br><span class="line"> <span class="keyword">private</span> <span class="keyword">final</span> List&lt;EventLoopHolder&gt; workers = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line"> <span class="meta">@Override</span></span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> EventLoop <span class="title">next</span><span class="params">()</span> </span>&#123;</span><br><span class="line">   <span class="keyword">if</span> (workers.isEmpty()) &#123;</span><br><span class="line">     <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException();</span><br><span class="line">   &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">     EventLoop worker = workers.get(pos).worker;</span><br><span class="line">     pos++;</span><br><span class="line">     checkPos();</span><br><span class="line">     <span class="keyword">return</span> worker;</span><br><span class="line">   &#125;</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">addWorker</span><span class="params">(EventLoop worker)</span> </span>&#123;</span><br><span class="line">   EventLoopHolder holder = findHolder(worker);</span><br><span class="line">   <span class="keyword">if</span> (holder == <span class="keyword">null</span>) &#123;</span><br><span class="line">     workers.add(<span class="keyword">new</span> EventLoopHolder(worker));</span><br><span class="line">   &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">     holder.count++;</span><br><span class="line">   &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>空集合就有问题，那EventLoop是啥时候添加进去这个availableWorkers的呢，我们回到HttpServerImpl,看这个方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">addHandler</span><span class="params">(T handler, ContextImpl context)</span> </span>&#123;</span><br><span class="line">    EventLoop worker = context.nettyEventLoop();</span><br><span class="line">    availableWorkers.addWorker(worker);</span><br><span class="line">    Handlers&lt;T&gt; handlers = <span class="keyword">new</span> Handlers&lt;&gt;();</span><br><span class="line">    Handlers&lt;T&gt; prev = handlerMap.putIfAbsent(worker, handlers);</span><br><span class="line">    <span class="keyword">if</span> (prev != <span class="keyword">null</span>) &#123;</span><br><span class="line">      handlers = prev;</span><br><span class="line">    &#125;</span><br><span class="line">    handlers.addHandler(<span class="keyword">new</span> HandlerHolder&lt;&gt;(context, handler));</span><br><span class="line">    hasHandlers = <span class="keyword">true</span>;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>具体是在listen方法里调用了这个方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">listenContext = vertx.getOrCreateContext();</span><br><span class="line"></span><br><span class="line">addHandlers(<span class="keyword">this</span>, listenContext);</span><br></pre></td></tr></table></figure>
+<p>这样就清楚了HttpServerImpl是用了当前线程的Context 的eventlLoop加入list,我们这里是生成了8个context,我们可以debug看到结果，添加了8个EventLoop的到了一个availableWorkers.</p>
+<p>那么这8个是怎么加入到一个availableWorkers的呢？我们看到是有生成8个HttpServerImpl的，但bootstrap实际是生成8个么？其实不是的，只生成了一个，我们再次看代码。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> HttpServer <span class="title">listen</span><span class="params">(<span class="keyword">int</span> port, String host, Handler&lt;AsyncResult&lt;HttpServer&gt;&gt; listenHandler)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">if</span> (requestStream.handler() == <span class="keyword">null</span> &amp;&amp; wsStream.handler() == <span class="keyword">null</span>) &#123;</span><br><span class="line">     <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Set request or websocket handler first"</span>);</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">if</span> (listening) &#123;</span><br><span class="line">     <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Already listening"</span>);</span><br><span class="line">   &#125;</span><br><span class="line"><span class="comment">//获取当前verticle执行线程的Context</span></span><br><span class="line">   listenContext = vertx.getOrCreateContext();</span><br><span class="line">   listening = <span class="keyword">true</span>;</span><br><span class="line"><span class="comment">//是否HTTPS</span></span><br><span class="line">   serverOrigin = (options.isSsl() ? <span class="string">"https"</span> : <span class="string">"http"</span>) + <span class="string">"://"</span> + host + <span class="string">":"</span> + port;</span><br><span class="line">   List&lt;HttpVersion&gt; applicationProtocols = options.getAlpnVersions();</span><br><span class="line">   <span class="keyword">if</span> (listenContext.isWorkerContext()) &#123;</span><br><span class="line">     applicationProtocols =  applicationProtocols.stream().filter(v -&gt; v != HttpVersion.HTTP_2).collect(Collectors.toList());</span><br><span class="line">   &#125;</span><br><span class="line">   sslHelper.setApplicationProtocols(applicationProtocols);</span><br><span class="line">   <span class="keyword">synchronized</span> (vertx.sharedHttpServers()) &#123;</span><br><span class="line">     <span class="keyword">this</span>.actualPort = port; <span class="comment">// Will be updated on bind for a wildcard port</span></span><br><span class="line">     id = <span class="keyword">new</span> ServerID(port, host);</span><br><span class="line"> <span class="comment">//这里就是只生成一个bootstrap的关键代码，ServerID重写了hashcode方法，这些只要是监听同样的host</span></span><br><span class="line">   <span class="comment">//+port,取到的httpServerImpl就是同一个，这样bootstrap其实只生成了一个</span></span><br><span class="line">     HttpServerImpl shared = vertx.sharedHttpServers().get(id);</span><br><span class="line">     <span class="keyword">if</span> (shared == <span class="keyword">null</span> || port == <span class="number">0</span>) &#123;</span><br><span class="line">       serverChannelGroup = <span class="keyword">new</span> DefaultChannelGroup(<span class="string">"vertx-acceptor-channels"</span>, GlobalEventExecutor.INSTANCE);</span><br><span class="line">	<span class="comment">//netty的EventLoopGroup</span></span><br><span class="line">       ServerBootstrap bootstrap = <span class="keyword">new</span> ServerBootstrap();</span><br><span class="line">       bootstrap.group(vertx.getAcceptorEventLoopGroup(), availableWorkers);</span><br><span class="line">       applyConnectionOptions(bootstrap);</span><br><span class="line">       sslHelper.validate(vertx);</span><br><span class="line">       bootstrap.childHandler(<span class="keyword">new</span> ChannelInitializer&lt;Channel&gt;() &#123;</span><br><span class="line">         <span class="meta">@Override</span></span><br><span class="line">           <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">initChannel</span><span class="params">(Channel ch)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">             <span class="keyword">if</span> (requestStream.isPaused() || wsStream.isPaused()) &#123;</span><br><span class="line">               ch.close();</span><br><span class="line">               <span class="keyword">return</span>;</span><br><span class="line">             &#125;</span><br><span class="line">             ChannelPipeline pipeline = ch.pipeline();</span><br><span class="line">		<span class="comment">//https连接work channel处理</span></span><br><span class="line">             <span class="keyword">if</span> (sslHelper.isSSL()) &#123;</span><br><span class="line">               io.netty.util.concurrent.Future&lt;Channel&gt; handshakeFuture;</span><br><span class="line">               <span class="keyword">if</span> (options.isSni()) &#123;</span><br><span class="line">                 VertxSniHandler sniHandler = <span class="keyword">new</span> VertxSniHandler(sslHelper, vertx);</span><br><span class="line">                 pipeline.addLast(sniHandler);</span><br><span class="line">                 handshakeFuture = sniHandler.handshakeFuture();</span><br><span class="line">               &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                 SslHandler handler = <span class="keyword">new</span> SslHandler(sslHelper.createEngine(vertx));</span><br><span class="line">                 pipeline.addLast(<span class="string">"ssl"</span>, handler);</span><br><span class="line">                 handshakeFuture = handler.handshakeFuture();</span><br><span class="line">               &#125;</span><br><span class="line">               handshakeFuture.addListener(future -&gt; &#123;</span><br><span class="line">                 <span class="keyword">if</span> (future.isSuccess()) &#123;</span><br><span class="line">                   <span class="keyword">if</span> (options.isUseAlpn()) &#123;</span><br><span class="line">                     SslHandler sslHandler = pipeline.get(SslHandler.class);</span><br><span class="line">                     String protocol = sslHandler.applicationProtocol();</span><br><span class="line">                     <span class="keyword">if</span> (<span class="string">"h2"</span>.equals(protocol)) &#123;</span><br><span class="line">                       handleHttp2(ch);</span><br><span class="line">                     &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                       handleHttp1(ch);</span><br><span class="line">                     &#125;</span><br><span class="line">                   &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                     handleHttp1(ch);</span><br><span class="line">                   &#125;</span><br><span class="line">                 &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                   HandlerHolder&lt;HttpHandlers&gt; handler = httpHandlerMgr.chooseHandler(ch.eventLoop());</span><br><span class="line">                   handler.context.executeFromIO(() -&gt; handler.handler.exceptionHandler.handle(future.cause()));</span><br><span class="line">                 &#125;</span><br><span class="line">               &#125;);</span><br><span class="line">             &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">               <span class="keyword">if</span> (DISABLE_H2C) &#123;</span><br><span class="line">                 handleHttp1(ch);</span><br><span class="line">               &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                 IdleStateHandler idle;</span><br><span class="line">                 <span class="keyword">if</span> (options.getIdleTimeout() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                   pipeline.addLast(<span class="string">"idle"</span>, idle = <span class="keyword">new</span> IdleStateHandler(<span class="number">0</span>, <span class="number">0</span>, options.getIdleTimeout()));</span><br><span class="line">                 &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                   idle = <span class="keyword">null</span>;</span><br><span class="line">                 &#125;</span><br><span class="line">                 <span class="comment">// Handler that detects whether the HTTP/2 connection preface or just process the request</span></span><br><span class="line">                 <span class="comment">// with the HTTP 1.x pipeline to support H2C with prior knowledge, i.e a client that connects</span></span><br><span class="line">                 <span class="comment">// and uses HTTP/2 in clear text directly without an HTTP upgrade.</span></span><br><span class="line">                 pipeline.addLast(<span class="keyword">new</span> Http1xOrH2CHandler() &#123;</span><br><span class="line">                   <span class="meta">@Override</span></span><br><span class="line">                   <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(ChannelHandlerContext ctx, <span class="keyword">boolean</span> h2c)</span> </span>&#123;</span><br><span class="line">                     <span class="keyword">if</span> (idle != <span class="keyword">null</span>) &#123;</span><br><span class="line">                       <span class="comment">// It will be re-added but this way we don't need to pay attention to order</span></span><br><span class="line">                       pipeline.remove(idle);</span><br><span class="line">                     &#125;</span><br><span class="line">                     <span class="keyword">if</span> (h2c) &#123;</span><br><span class="line">                       handleHttp2(ctx.channel());</span><br><span class="line">                     &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">					<span class="comment">//我们默认http请求处理</span></span><br><span class="line">                       handleHttp1(ch);</span><br><span class="line">                     &#125;</span><br><span class="line">                   &#125;</span><br><span class="line"></span><br><span class="line">                   <span class="meta">@Override</span></span><br><span class="line">                   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">userEventTriggered</span><span class="params">(ChannelHandlerContext ctx, Object evt)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                     <span class="keyword">if</span> (evt <span class="keyword">instanceof</span> IdleStateEvent &amp;&amp; ((IdleStateEvent) evt).state() == IdleState.ALL_IDLE) &#123;</span><br><span class="line">                       ctx.close();</span><br><span class="line">                     &#125;</span><br><span class="line">                   &#125;</span><br><span class="line"></span><br><span class="line">                   <span class="meta">@Override</span></span><br><span class="line">                   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exceptionCaught</span><span class="params">(ChannelHandlerContext ctx, Throwable cause)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                     <span class="keyword">super</span>.exceptionCaught(ctx, cause);</span><br><span class="line">                     HandlerHolder&lt;HttpHandlers&gt; handler = httpHandlerMgr.chooseHandler(ctx.channel().eventLoop());</span><br><span class="line">                     handler.context.executeFromIO(() -&gt; handler.handler.exceptionHandler.handle(cause));</span><br><span class="line">                   &#125;</span><br><span class="line">                 &#125;);</span><br><span class="line">               &#125;</span><br><span class="line">             &#125;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//添加listen端口的后处理器，同时将context的eventLoop加入HttpServer的avilableWorks中，初始化work EverntLoopGroup过程</span></span><br><span class="line">       addHandlers(<span class="keyword">this</span>, listenContext);</span><br><span class="line">       <span class="keyword">try</span> &#123;</span><br><span class="line">	  <span class="comment">//绑定端口</span></span><br><span class="line">         bindFuture = AsyncResolveConnectHelper.doBind(vertx, SocketAddress.inetSocketAddress(port, host), bootstrap);</span><br><span class="line">         bindFuture.addListener(res -&gt; &#123;</span><br><span class="line">           <span class="keyword">if</span> (res.failed()) &#123;</span><br><span class="line">             vertx.sharedHttpServers().remove(id);</span><br><span class="line">           &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">             Channel serverChannel = res.result();</span><br><span class="line">             HttpServerImpl.<span class="keyword">this</span>.actualPort = ((InetSocketAddress)serverChannel.localAddress()).getPort();</span><br><span class="line">             serverChannelGroup.add(serverChannel);</span><br><span class="line">             VertxMetrics metrics = vertx.metricsSPI();</span><br><span class="line">             <span class="keyword">this</span>.metrics = metrics != <span class="keyword">null</span> ? metrics.createMetrics(<span class="keyword">this</span>, <span class="keyword">new</span> SocketAddressImpl(port, host), options) : <span class="keyword">null</span>;</span><br><span class="line">           &#125;</span><br><span class="line">         &#125;);</span><br><span class="line">       &#125; <span class="keyword">catch</span> (<span class="keyword">final</span> Throwable t) &#123;</span><br><span class="line">         <span class="comment">// Make sure we send the exception back through the handler (if any)</span></span><br><span class="line">         <span class="keyword">if</span> (listenHandler != <span class="keyword">null</span>) &#123;</span><br><span class="line">           vertx.runOnContext(v -&gt; listenHandler.handle(Future.failedFuture(t)));</span><br><span class="line">         &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">           <span class="comment">// No handler - log so user can see failure</span></span><br><span class="line">           log.error(t);</span><br><span class="line">         &#125;</span><br><span class="line">         listening = <span class="keyword">false</span>;</span><br><span class="line">         <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">       &#125;</span><br><span class="line">	<span class="comment">//将httpServer放入map,ServerID为KEY</span></span><br><span class="line">       vertx.sharedHttpServers().put(id, <span class="keyword">this</span>);</span><br><span class="line">       actualServer = <span class="keyword">this</span>;</span><br><span class="line">     &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">       <span class="comment">// Server already exists with that host/port - we will use that</span></span><br><span class="line">       actualServer = shared;</span><br><span class="line">       <span class="keyword">this</span>.actualPort = shared.actualPort;</span><br><span class="line">       addHandlers(actualServer, listenContext);</span><br><span class="line">       VertxMetrics metrics = vertx.metricsSPI();</span><br><span class="line">       <span class="keyword">this</span>.metrics = metrics != <span class="keyword">null</span> ? metrics.createMetrics(<span class="keyword">this</span>, <span class="keyword">new</span> SocketAddressImpl(port, host), options) : <span class="keyword">null</span>;</span><br><span class="line">     &#125;</span><br><span class="line">     actualServer.bindFuture.addListener(future -&gt; &#123;</span><br><span class="line">       <span class="keyword">if</span> (listenHandler != <span class="keyword">null</span>) &#123;</span><br><span class="line">         <span class="keyword">final</span> AsyncResult&lt;HttpServer&gt; res;</span><br><span class="line">         <span class="keyword">if</span> (future.succeeded()) &#123;</span><br><span class="line">           res = Future.succeededFuture(HttpServerImpl.<span class="keyword">this</span>);</span><br><span class="line">         &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">           res = Future.failedFuture(future.cause());</span><br><span class="line">           listening = <span class="keyword">false</span>;</span><br><span class="line">         &#125;</span><br><span class="line">         listenContext.runOnContext((v) -&gt; listenHandler.handle(res));</span><br><span class="line">       &#125; <span class="keyword">else</span> <span class="keyword">if</span> (future.failed()) &#123;</span><br><span class="line">         listening  = <span class="keyword">false</span>;</span><br><span class="line">         <span class="comment">// No handler - log so user can see failure</span></span><br><span class="line">         log.error(future.cause());</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;);</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h2><ul>
+<li>1.如果verticle中创建了多个httpServer，监听同一个ip端口，只创建一个Bootstrap。</li>
+<li>2.bootstrap关联的Boss EventLoopGroup是vertx的accpetEventLoopGroup，默认一个线程</li>
+<li>3.httpServer 的work EventLoopGroup其实是verticle Context绑定的EventLoop集合。</li>
+</ul>
+<p>这样每一个http请求过来，获取连接的是accpetEventLoop,处理后续的读写数据是vertx的EventLoopGroup。over</p>
+<h1 id="其他细节"><a href="#其他细节" class="headerlink" title="其他细节"></a>其他细节</h1><h2 id="http1-1的处理"><a href="#http1-1的处理" class="headerlink" title="http1.1的处理"></a>http1.1的处理</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//httpServerImpl</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">handleHttp1</span><span class="params">(Channel ch)</span> </span>&#123;</span><br><span class="line">    HandlerHolder&lt;HttpHandlers&gt; holder = httpHandlerMgr.chooseHandler(ch.eventLoop());</span><br><span class="line">    <span class="keyword">if</span> (holder == <span class="keyword">null</span>) &#123;</span><br><span class="line">      sendServiceUnavailable(ch);</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    configureHttp1(ch.pipeline(), holder);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">configureHttp1</span><span class="params">(ChannelPipeline pipeline, HandlerHolder&lt;HttpHandlers&gt; holder)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (logEnabled) &#123;</span><br><span class="line">      pipeline.addLast(<span class="string">"logging"</span>, <span class="keyword">new</span> LoggingHandler());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (USE_FLASH_POLICY_HANDLER) &#123;</span><br><span class="line">      pipeline.addLast(<span class="string">"flashpolicy"</span>, <span class="keyword">new</span> FlashPolicyHandler());</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">//添加http解码器</span></span><br><span class="line">    pipeline.addLast(<span class="string">"httpDecoder"</span>, <span class="keyword">new</span> HttpRequestDecoder(options.getMaxInitialLineLength()</span><br><span class="line">        , options.getMaxHeaderSize(), options.getMaxChunkSize(), <span class="keyword">false</span>, options.getDecoderInitialBufferSize()));</span><br><span class="line">	<span class="comment">//添加http编码器</span></span><br><span class="line">    pipeline.addLast(<span class="string">"httpEncoder"</span>, <span class="keyword">new</span> VertxHttpResponseEncoder());</span><br><span class="line">    <span class="keyword">if</span> (options.isDecompressionSupported()) &#123;</span><br><span class="line">      pipeline.addLast(<span class="string">"inflater"</span>, <span class="keyword">new</span> HttpContentDecompressor(<span class="keyword">true</span>));</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">//合并数据</span></span><br><span class="line">    <span class="keyword">if</span> (options.isCompressionSupported()) &#123;</span><br><span class="line">      pipeline.addLast(<span class="string">"deflater"</span>, <span class="keyword">new</span> HttpChunkContentCompressor(options.getCompressionLevel()));</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">//ssl支持</span></span><br><span class="line">    <span class="keyword">if</span> (sslHelper.isSSL() || options.isCompressionSupported()) &#123;</span><br><span class="line">      <span class="comment">// only add ChunkedWriteHandler when SSL is enabled otherwise it is not needed as FileRegion is used.</span></span><br><span class="line">      pipeline.addLast(<span class="string">"chunkedWriter"</span>, <span class="keyword">new</span> ChunkedWriteHandler());       <span class="comment">// For large file / sendfile support</span></span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">//空闲连接处理</span></span><br><span class="line">    <span class="keyword">if</span> (options.getIdleTimeout() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">      pipeline.addLast(<span class="string">"idle"</span>, <span class="keyword">new</span> IdleStateHandler(<span class="number">0</span>, <span class="number">0</span>, options.getIdleTimeout()));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!DISABLE_H2C) &#123;</span><br><span class="line">      pipeline.addLast(<span class="string">"h2c"</span>, <span class="keyword">new</span> Http2UpgradeHandler());</span><br><span class="line">    &#125;</span><br><span class="line">    Http1xServerHandler handler;</span><br><span class="line">	<span class="comment">//是否webSocket连接处理</span></span><br><span class="line">    <span class="keyword">if</span> (DISABLE_WEBSOCKETS) &#123;</span><br><span class="line">      <span class="comment">// As a performance optimisation you can set a system property to disable websockets altogether which avoids</span></span><br><span class="line">      <span class="comment">// some casting and a header check</span></span><br><span class="line">      handler = <span class="keyword">new</span> Http1xServerHandler(sslHelper, options, serverOrigin, holder, metrics);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      handler = <span class="keyword">new</span> ServerHandlerWithWebSockets(sslHelper, options, serverOrigin, holder, metrics);</span><br><span class="line">    &#125;</span><br><span class="line">    handler.addHandler(conn -&gt; &#123;</span><br><span class="line">      connectionMap.put(pipeline.channel(), conn);</span><br><span class="line">    &#125;);</span><br><span class="line">    handler.removeHandler(conn -&gt; &#123;</span><br><span class="line">      connectionMap.remove(pipeline.channel());</span><br><span class="line">    &#125;);</span><br><span class="line">	<span class="comment">//添加我们自定义的requestHadler,我们也就是在这上面折腾- -</span></span><br><span class="line">    pipeline.addLast(<span class="string">"handler"</span>, handler);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="pause和resume"><a href="#pause和resume" class="headerlink" title="pause和resume"></a>pause和resume</h2><p>vertx对于request和response的操作其实本质上是netty对channel的操作，而pause和resume本质是改变channel的autoRead的配置</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//ConnectionBase</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doPause</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    chctx.channel().config().setAutoRead(<span class="keyword">false</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doResume</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    chctx.channel().config().setAutoRead(<span class="keyword">true</span>);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>autoRead这个配置有什么用呢？</p>
+<p>避免分析又臭又长，先说结论，主要有两个作用：</p>
+<ul>
+<li><ol>
+<li>如果对serverChannel设置，是暂停对serverChannel的对channel的注册</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>如果是对workChannel设置，是暂停channel对流的读取</li>
+</ol>
+</li>
+</ul>
+<p>先整体看下DefaultChannelPipeline里面HeadContext的方法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelActive</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            ctx.fireChannelActive();<span class="comment">//本质还是调用channelActive方法- -</span></span><br><span class="line"></span><br><span class="line">            readIfIsAutoRead();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelReadComplete</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            ctx.fireChannelReadComplete();<span class="comment">//本质还是调用channelReadComplete方法，╮(╯▽╰)╭</span></span><br><span class="line"></span><br><span class="line">            readIfIsAutoRead();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">readIfIsAutoRead</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (channel.config().isAutoRead()) &#123;</span><br><span class="line">                channel.read();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>channelActive和channelReadComplete这两个事件是什么时候触发呢？</strong></p>
+<p>channelActive是在Channel(netty的ServerChannel和子channel)注册到selector时触发<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">register0</span><span class="params">(ChannelPromise promise)</span> </span>&#123;</span><br><span class="line">           <span class="keyword">try</span> &#123;</span><br><span class="line">               <span class="comment">// check if the channel is still open as it could be closed in the mean time when the register</span></span><br><span class="line">               <span class="comment">// call was outside of the eventLoop</span></span><br><span class="line">               <span class="keyword">if</span> (!promise.setUncancellable() || !ensureOpen(promise)) &#123;</span><br><span class="line">                   <span class="keyword">return</span>;</span><br><span class="line">               &#125;</span><br><span class="line">               <span class="keyword">boolean</span> firstRegistration = neverRegistered;</span><br><span class="line">               doRegister();<span class="comment">//注册读事件</span></span><br><span class="line">               neverRegistered = <span class="keyword">false</span>;</span><br><span class="line">               registered = <span class="keyword">true</span>;</span><br><span class="line"></span><br><span class="line">               <span class="comment">// Ensure we call handlerAdded(...) before we actually notify the promise. This is needed as the</span></span><br><span class="line">               <span class="comment">// user may already fire events through the pipeline in the ChannelFutureListener.</span></span><br><span class="line">               pipeline.invokeHandlerAddedIfNeeded();</span><br><span class="line"></span><br><span class="line">               safeSetSuccess(promise);</span><br><span class="line">               pipeline.fireChannelRegistered();</span><br><span class="line">               <span class="comment">// Only fire a channelActive if the channel has never been registered. This prevents firing</span></span><br><span class="line">               <span class="comment">// multiple channel actives if the channel is deregistered and re-registered.</span></span><br><span class="line">               <span class="keyword">if</span> (isActive()) &#123;</span><br><span class="line">                   <span class="keyword">if</span> (firstRegistration) &#123;</span><br><span class="line">                       pipeline.fireChannelActive();</span><br><span class="line">                   &#125; <span class="keyword">else</span> <span class="keyword">if</span> (config().isAutoRead()) &#123;</span><br><span class="line">                       <span class="comment">// This channel was registered before and autoRead() is set. This means we need to begin read</span></span><br><span class="line">                       <span class="comment">// again so that we process inbound data.</span></span><br><span class="line">                       <span class="comment">//</span></span><br><span class="line">                       <span class="comment">// See https://github.com/netty/netty/issues/4805</span></span><br><span class="line">                       beginRead();</span><br><span class="line">                   &#125;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">               <span class="comment">// Close the channel directly to avoid FD leak.</span></span><br><span class="line">               closeForcibly();</span><br><span class="line">               closeFuture.setClosed();</span><br><span class="line">               safeSetFailure(promise, t);</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure></p>
+<p>netty初始化完成时，bootstrap的serverChannelPipeline内部是这样的</p>
+<p>head–&gt;ServerBootstrapAcceptor–&gt;tail</p>
+<p>pipeline执行fireChannelActive()是从headContext开始触发，最后执行的是<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// AbstractNioChannel.java中的AbstractNioUnsafe类</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doBeginRead</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">// Channel.read() or ChannelHandlerContext.read() was called</span></span><br><span class="line">        <span class="keyword">final</span> SelectionKey selectionKey = <span class="keyword">this</span>.selectionKey;</span><br><span class="line">        <span class="keyword">if</span> (!selectionKey.isValid()) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        readPending = <span class="keyword">true</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> interestOps = selectionKey.interestOps();</span><br><span class="line">        <span class="keyword">if</span> ((interestOps &amp; readInterestOp) == <span class="number">0</span>) &#123;</span><br><span class="line">            selectionKey.interestOps(interestOps | readInterestOp);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>这个autoread过程是为serverchannel注册accept和读事件</p>
+<p>后续客户端开始于服务端连接，触发selector的accept/read事件,serverChannel的ServerBootstrapAcceptor创建了子chuannel，并向work EventLoop的selector上注册子channel，子channel循环前面的流程注册读事件。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelRead</span><span class="params">(ChannelHandlerContext ctx, Object msg)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">final</span> Channel child = (Channel) msg;</span><br><span class="line"></span><br><span class="line">            child.pipeline().addLast(childHandler);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span> (Entry&lt;ChannelOption&lt;?&gt;, Object&gt; e: childOptions) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    <span class="keyword">if</span> (!child.config().setOption((ChannelOption&lt;Object&gt;) e.getKey(), e.getValue())) &#123;</span><br><span class="line">                        logger.warn(<span class="string">"Unknown channel option: "</span> + e);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">                    logger.warn(<span class="string">"Failed to set a channel option: "</span> + child, t);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span> (Entry&lt;AttributeKey&lt;?&gt;, Object&gt; e: childAttrs) &#123;</span><br><span class="line">                child.attr((AttributeKey&lt;Object&gt;) e.getKey()).set(e.getValue());</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                childGroup.register(child).addListener(<span class="keyword">new</span> ChannelFutureListener() &#123;</span><br><span class="line">                    <span class="meta">@Override</span></span><br><span class="line">                    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">operationComplete</span><span class="params">(ChannelFuture future)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                        <span class="keyword">if</span> (!future.isSuccess()) &#123;</span><br><span class="line">                            forceClose(child, future.cause());</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">                forceClose(child, t);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<p>接着客户端向服务端发送数据，触发子channel的read事件</p>
+<p>而channelReadComplete是读事件后触发。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Also check for readOps of 0 to workaround possible JDK bug which may otherwise lead</span></span><br><span class="line">            <span class="comment">// to a spin loop</span></span><br><span class="line">            <span class="keyword">if</span> ((readyOps &amp; (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != <span class="number">0</span> || readyOps == <span class="number">0</span>) &#123;</span><br><span class="line">                unsafe.read();</span><br><span class="line">                <span class="keyword">if</span> (!ch.isOpen()) &#123;</span><br><span class="line">                    <span class="comment">// Connection already closed - no need to handle write.</span></span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//AbstractNioMessageChannel .read()</span></span><br><span class="line"><span class="keyword">int</span> size = readBuf.size();</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; size; i ++) &#123;</span><br><span class="line">                    readPending = <span class="keyword">false</span>;</span><br><span class="line">                    pipeline.fireChannelRead(readBuf.get(i));</span><br><span class="line">                &#125;</span><br><span class="line">                readBuf.clear();</span><br><span class="line">                allocHandle.readComplete();<span class="comment">//重新计算缓冲区大小并通知pipeline触发fireChannelReadComplete();</span></span><br><span class="line">                pipeline.fireChannelReadComplete();</span><br></pre></td></tr></table></figure></p>
+<p>再次总结下，autoRead这个属性在netty里面的作用是自动向selector注册读事件，如果关闭的话netty就不会从channel中读取数据。</p>
+<p>按照网上有的文章的说法，这个autoread是利用了tcp的负反馈机制，调节消费端的消费窗口的大小达到控制发送端发送速率的作用。</p>
+<h2 id="参考相关"><a href="#参考相关" class="headerlink" title="参考相关"></a>参考相关</h2><p>netty的autoRead</p>
+<p><a href="https://www.jianshu.com/p/8f22675d71ac" target="_blank" rel="noopener">https://www.jianshu.com/p/8f22675d71ac</a></p>
+
+    </div>
+
+    
+
+    
+        <div class="post-tags">
+            <i class="fa fa-tags" aria-hidden="true"></i>
+            <a href="/tags/笔记/">#笔记</a> <a href="/tags/netty/">#netty</a> <a href="/tags/vertx/">#vertx</a>
+        </div>
+    
+
+    <!-- Comments -->
+    
+
+</div>
+        </section>
+
+    </div>
+</div>
+
+
+</div>
+
+<!-- Footer -->
+<div class="push"></div>
+
+<footer class="footer-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
+                <h2>About</h2>
+                <p>
+                    This theme was developed by <a href="https://github.com/klugjo">Jonathan Klughertz</a>. The source code is available on Github. Create Websites. Make Magic.
+                </p>
+            </div>
+            
+    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
+        <h2>Recent Posts</h2>
+        <ul>
+            
+            <li>
+                <a class="footer-post" href="/2018/12/19/rxjava碎碎念/">rxjava设计原理</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/09/17/rxjava设计原理/">rxjava设计原理</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/09/09/vertx-circuitBreadker源码解析/">vertx-circuitBreadker源码解析</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/27/vertx-httpserver源码解析/">vertx httpserver源码解析</a>
+            </li>
+            
+        </ul>
+    </div>
+
+
+
+            
+<div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 footer-categories">
+    <h2>Categories</h2>
+    <ul>
+        
+        <li>
+            <a class="footer-post" href="/categories/emotion/">emotion</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/j-u-c/">j.u.c</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/jdk/">jdk</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/netty/">netty</a>
+        </li>
+        
+    </ul>
+</div>
+
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="list-inline footer-social-icons">
+                    
+                    <li class="list-inline-item">
+                        <a href="https://github.com/klugjo/hexo-theme-alpha-dust">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-github"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://twitter.com/?lang=en">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-twitter"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.facebook.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-facebook"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.instagram.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-instagram"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://dribbble.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-dribbble"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://plus.google.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-google-plus"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.behance.net/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-behance"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://500px.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-500px"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="mailto:test@example.com">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-envelope-o"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="\#">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-rss"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="footer-copyright">
+                    @Untitled. All right reserved | Design & Hexo <a href="http://www.codeblocq.com/">Jonathan Klughertz</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- After footer scripts -->
+
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Tween Max -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/main.js"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>

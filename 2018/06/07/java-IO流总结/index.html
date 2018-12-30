@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="云是风的故事，要很轻很轻才行">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="ZouFeng">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="java IO流总结"/>
+    
+
+    <!--Open Graph Description-->
+    
+        <meta property="og:description" content="云是风的故事，要很轻很轻才行" />
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="zoufeng_blog"/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+    <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>java IO流总结 - zoufeng_blog</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Google Analytics -->
+    
+
+
+</head>
+
+
+<body>
+
+<div class="bg-gradient"></div>
+<div class="bg-pattern"></div>
+
+<!-- Menu -->
+<!--Menu Links and Overlay-->
+<div class="menu-bg">
+    <div class="menu-container">
+        <ul>
+            
+            <li class="menu-item">
+                <a href="/">
+                    Home
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/archives">
+                    Archives
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/about.html">
+                    About
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/tags">
+                    Tags
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/categories">
+                    Categories
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/contact.html">
+                    Contact
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+<!--Hamburger Icon-->
+<nav>
+    <a href="#menu"></a>
+</nav>
+
+<div class="container">
+
+    <!-- Main Content -->
+    <div class="row">
+    <div class="col-sm-12">
+
+        <!--Title and Logo-->
+        <header>
+    <div class="logo">
+        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
+        
+    </div>
+</header>
+
+        <section class="main">
+            
+<div class="post">
+
+    <div class="post-header">
+        <h1 class="title">
+            <a href="/2018/06/07/java-IO流总结/">
+                java IO流总结
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-06-07</span>
+            
+            
+            
+                <span class="category">
+                    <a href="/categories/jdk/">jdk</a>
+                </span>
+            
+        </div>
+    </div>
+	
+	<div class="entry" style="position:fixed;left:10px" >
+			<p class="show-toc-btn" id="show-toc-btn" onclick="showToc();" style="display:block">
+				<span class="btn-bg"></span>
+				<span class="btn-text">文章导航</span>
+			</p>
+		<div id="toc-article" class="toc-article" style="display:none">
+			<span id="toc-close" class="toc-close" title="隐藏导航" onclick="showBtn();">x</span>
+			<strong class="toc-title">文章目录</strong>
+			<ol class="post-toc"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#java-I-O流"><span class="post-toc-number">1.</span> <span class="post-toc-text">java I/O流</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#InputStream"><span class="post-toc-number">2.</span> <span class="post-toc-text">InputStream</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#read"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">read()</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#read-byte-b-int-offset-int-length"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">read(byte[] b,int offset,int length)</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#close"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">close()</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#BufferedInputStream"><span class="post-toc-number">3.</span> <span class="post-toc-text">BufferedInputStream</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#buff"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">buff</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#read-1"><span class="post-toc-number">3.2.</span> <span class="post-toc-text">read()</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#fill"><span class="post-toc-number">3.3.</span> <span class="post-toc-text">fill()</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#close-1"><span class="post-toc-number">3.3.1.</span> <span class="post-toc-text">close()</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#ByteArrayInputStream"><span class="post-toc-number">4.</span> <span class="post-toc-text">ByteArrayInputStream</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#OutputStream"><span class="post-toc-number">5.</span> <span class="post-toc-text">OutputStream</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#write-int-b"><span class="post-toc-number">5.1.</span> <span class="post-toc-text">write(int b)</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#write-byte-b-int-off-int-len"><span class="post-toc-number">5.2.</span> <span class="post-toc-text">write(byte b[], int off, int len)</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#flush"><span class="post-toc-number">5.3.</span> <span class="post-toc-text">flush</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Closeable、Flushable-interface"><span class="post-toc-number">6.</span> <span class="post-toc-text">Closeable、Flushable  interface</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#序列化和反序列化"><span class="post-toc-number">7.</span> <span class="post-toc-text">序列化和反序列化</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#ObjectInputStream-amp-ObjectOutputStream"><span class="post-toc-number">7.1.</span> <span class="post-toc-text">ObjectInputStream &amp; ObjectOutputStream</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#引用相关"><span class="post-toc-number">8.</span> <span class="post-toc-text">引用相关</span></a></li></ol>
+		</div>
+		<script type="text/javascript">
+			function showToc(){
+				var toc_article = document.getElementById("toc-article");
+				var show_toc_btn = document.getElementById("show-toc-btn");
+				toc_article.setAttribute("style","display:block");
+				show_toc_btn.setAttribute("style","display:none");
+			};
+			function showBtn(){
+				var toc_article = document.getElementById("toc-article");
+				var show_toc_btn = document.getElementById("show-toc-btn");
+				toc_article.setAttribute("style","display:none");
+				show_toc_btn.setAttribute("style","display:block");
+			};
+		</script>
+	
+    </div>
+	
+	
+	<!-- 文章目录
+	<div class="entry" style="position:fixed;right:10px" >
+		<ol class="post-toc"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#java-I-O流"><span class="post-toc-number">1.</span> <span class="post-toc-text">java I/O流</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#InputStream"><span class="post-toc-number">2.</span> <span class="post-toc-text">InputStream</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#read"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">read()</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#read-byte-b-int-offset-int-length"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">read(byte[] b,int offset,int length)</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#close"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">close()</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#BufferedInputStream"><span class="post-toc-number">3.</span> <span class="post-toc-text">BufferedInputStream</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#buff"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">buff</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#read-1"><span class="post-toc-number">3.2.</span> <span class="post-toc-text">read()</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#fill"><span class="post-toc-number">3.3.</span> <span class="post-toc-text">fill()</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#close-1"><span class="post-toc-number">3.3.1.</span> <span class="post-toc-text">close()</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#ByteArrayInputStream"><span class="post-toc-number">4.</span> <span class="post-toc-text">ByteArrayInputStream</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#OutputStream"><span class="post-toc-number">5.</span> <span class="post-toc-text">OutputStream</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#write-int-b"><span class="post-toc-number">5.1.</span> <span class="post-toc-text">write(int b)</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#write-byte-b-int-off-int-len"><span class="post-toc-number">5.2.</span> <span class="post-toc-text">write(byte b[], int off, int len)</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#flush"><span class="post-toc-number">5.3.</span> <span class="post-toc-text">flush</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Closeable、Flushable-interface"><span class="post-toc-number">6.</span> <span class="post-toc-text">Closeable、Flushable  interface</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#序列化和反序列化"><span class="post-toc-number">7.</span> <span class="post-toc-text">序列化和反序列化</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#ObjectInputStream-amp-ObjectOutputStream"><span class="post-toc-number">7.1.</span> <span class="post-toc-text">ObjectInputStream &amp; ObjectOutputStream</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#引用相关"><span class="post-toc-number">8.</span> <span class="post-toc-text">引用相关</span></a></li></ol>
+    </div> -->
+
+    <div class="content">
+
+        <!-- Gallery -->
+        
+
+        <!-- Post Content -->
+        <h3 id="java-I-O流"><a href="#java-I-O流" class="headerlink" title="java I/O流"></a>java I/O流</h3><p>jdk提供最底层的api就是InputStream和OutputStream了，所有的流都是基于这两个的实现和封装</p>
+<a id="more"></a>
+<h3 id="InputStream"><a href="#InputStream" class="headerlink" title="InputStream"></a>InputStream</h3><h4 id="read"><a href="#read" class="headerlink" title="read()"></a>read()</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">int</span> <span class="title">read</span><span class="params">()</span> <span class="keyword">throws</span> IOException</span></span><br></pre></td></tr></table></figure>
+<p>read提供api给子类实现，定义字节是一个个读取，并规范返回值-1时表示读到末尾</p>
+<h4 id="read-byte-b-int-offset-int-length"><a href="#read-byte-b-int-offset-int-length" class="headerlink" title="read(byte[] b,int offset,int length)"></a>read(byte[] b,int offset,int length)</h4><p>将一定字节读入到btye数组中<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">read</span><span class="params">(<span class="keyword">byte</span> b[], <span class="keyword">int</span> off, <span class="keyword">int</span> len)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (b == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (off &lt; <span class="number">0</span> || len &lt; <span class="number">0</span> || len &gt; b.length - off) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IndexOutOfBoundsException();</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (len == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> c = read();</span><br><span class="line">        <span class="keyword">if</span> (c == -<span class="number">1</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        b[off] = (<span class="keyword">byte</span>)c;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> i = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">for</span> (; i &lt; len ; i++) &#123;</span><br><span class="line">                c = read();</span><br><span class="line">                <span class="keyword">if</span> (c == -<span class="number">1</span>) &#123;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                b[off + i] = (<span class="keyword">byte</span>)c;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException ee) &#123;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> i;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="close"><a href="#close" class="headerlink" title="close()"></a>close()</h4><p>定义流的关闭</p>
+<h3 id="BufferedInputStream"><a href="#BufferedInputStream" class="headerlink" title="BufferedInputStream"></a>BufferedInputStream</h3><p>和FileInputStream类似，对InputStream采用了装饰者设计模式，增强一两个方法，本质还是调用InputStream的方法。</p>
+<h4 id="buff"><a href="#buff" class="headerlink" title="buff"></a>buff</h4><p>在内部封装了一个byte[]数组，作为字节流数据的缓冲容器，一次性从输入字节流中读取多个字节的数据放入byte数组。程序读取部分字节的时候直接从byte数组中获取，直到内存中的数据用完再重新从字节流中读取新的字节。<br><strong>缓冲流没有提高源流的读取速度</strong>，因为无论如何读取字节，底层还是使用InputStream的read()一个一个字节读取的。<br>缓冲流之所以提高效率是在需要多次读取同一个数据源的情况下，通过内存缓冲InputStream的数据，减少磁盘io次数。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">BufferedInputStream</span><span class="params">(InputStream in, <span class="keyword">int</span> size)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">super</span>(in);</span><br><span class="line">       <span class="keyword">if</span> (size &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Buffer size &lt;= 0"</span>);</span><br><span class="line">       &#125;</span><br><span class="line">       buf = <span class="keyword">new</span> <span class="keyword">byte</span>[size];</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>buff有重要的4个变量:</p>
+<ul>
+<li>count 当前buff里面的字节数，默认0</li>
+<li>pos 当前读取字节的游标的位置，默认0</li>
+<li>markpos 标记的pos位置。当调用了mark方法后，会将pos的位置记录到markpos。当调用reset（）功能时，pos=markpos,这样就实现了重复读取数据的功能。默认-1</li>
+<li>marklimit 它的值表示在调用mark方法后reset方法前最多允许读取的字节数（由markLimit和buffer.size中较大的那个决定的），如果超过这个限制，则在调用reset方法时会 报：Reseting to invalid mark 异常 </li>
+</ul>
+<p>字节的读取和刷新依赖上面的变量:</p>
+<ul>
+<li>不考虑markpos<br><img src="/img/jdk/io/stream/buff_input_stream_01.jpg" alt="Image text"></li>
+<li>考虑markpos<br><img src="/img/jdk/io/stream/buff_input_stream_02.jpg" alt="Image text"><h4 id="read-1"><a href="#read-1" class="headerlink" title="read()"></a>read()</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">int</span> <span class="title">read</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (pos &gt;= count) &#123;</span><br><span class="line">            fill();<span class="comment">//如果当前位置等于或超过字节数量，重新填充</span></span><br><span class="line">            <span class="keyword">if</span> (pos &gt;= count)</span><br><span class="line">                <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> getBufIfOpen()[pos++] &amp; <span class="number">0xff</span>;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>这里多了个位与操作，0xff是int类型，二进制为0000 0000 0000 0000 0000 0000 1111 1111<br>getBufIfOpen()[pos++]获得是一个byte值，如果是-1的值直接返回就让程序误以为文件已读完，在这里多个位操作是为了解决这个问题。<br>过程如下：<br>byte的-1（最高位表示符号位，以补码的形式表示负数为：1111 1111）</p>
+<p>转换为int之后的二进制1111 1111 1111 1111 1111 1111 1111 1111</p>
+<p>&amp; 0xff之后高位去0</p>
+<p>最后返回的结果是0000 0000 0000 0000 0000 0000 1111 1111, 为int值为256</p>
+<p>其-128~-1被转为int中128~256的正数表示。</p>
+<p>但这样引入了新问题：byte变成了byte,数据的值发生了变化，真正要用读取的数据时是否还能拿到原始的byte。<br>还拿上面那个例子来看:<br>当读取返回一个256时，将其强制类型转换为byte，(byte)256得到byte的-1，因为byte只有8位，当int的高位被丢弃后就只剩下1111 1111，在byte中高位的1表示符号位为负数，最终的结果即是byte的-1；同样byte的-128（1000 0000）被转为int的128（0000 0000 0000 0000 0000 0000 1000 0000），强制类型转换后还原byte的1000 0000</p>
+<h4 id="fill"><a href="#fill" class="headerlink" title="fill()"></a>fill()</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">fill</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">byte</span>[] buffer = getBufIfOpen();</span><br><span class="line">        <span class="keyword">if</span> (markpos &lt; <span class="number">0</span>)</span><br><span class="line">            pos = <span class="number">0</span>;     <span class="comment">//markpos说明没有标记，则直接将pos位置设置为0</span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (pos &gt;= buffer.length)  <span class="comment">/* no room left in buffer */</span></span><br><span class="line">            <span class="keyword">if</span> (markpos &gt; <span class="number">0</span>) &#123;  <span class="comment">//0-&gt;markpos位置的数据可以丢弃，copy markpos-&gt;pos的数据到新的buff中</span></span><br><span class="line">                <span class="keyword">int</span> sz = pos - markpos;</span><br><span class="line">                System.arraycopy(buffer, markpos, buffer, <span class="number">0</span>, sz);</span><br><span class="line">                pos = sz;</span><br><span class="line">                markpos = <span class="number">0</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (buffer.length &gt;= marklimit) &#123;<span class="comment">//这里markpos&lt;0 说明pos位置超过了marklimit限制，markpos失效了</span></span><br><span class="line">                markpos = -<span class="number">1</span>;   </span><br><span class="line">                pos = <span class="number">0</span>;        </span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (buffer.length &gt;= MAX_BUFFER_SIZE) &#123;<span class="comment">//为毛不放前面判断？？？？</span></span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> OutOfMemoryError(<span class="string">"Required array size too large"</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;  <span class="comment">//这里是markpos&lt;0 &amp;&amp; marklimit&gt;buffer.length &amp;&amp; marklimit&gt;pos的情况，说明0-&gt;pos位置的字节都不能丢弃，那咋办，只能扩容数组了</span></span><br><span class="line">                <span class="keyword">int</span> nsz = (pos &lt;= MAX_BUFFER_SIZE - pos) ?</span><br><span class="line">                        pos * <span class="number">2</span> : MAX_BUFFER_SIZE;</span><br><span class="line">                <span class="keyword">if</span> (nsz &gt; marklimit)</span><br><span class="line">                    nsz = marklimit; <span class="comment">//扩容大小取2*pos，MAX_BUFFER_SIZE与marklimit中的最小值</span></span><br><span class="line">                <span class="keyword">byte</span> nbuf[] = <span class="keyword">new</span> <span class="keyword">byte</span>[nsz];</span><br><span class="line">                System.arraycopy(buffer, <span class="number">0</span>, nbuf, <span class="number">0</span>, pos);</span><br><span class="line">                <span class="keyword">if</span> (!bufUpdater.compareAndSet(<span class="keyword">this</span>, buffer, nbuf)) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"Stream closed"</span>);</span><br><span class="line">                    <span class="comment">//这里有个疑问，多线程访问的情况话也是会失败的，为什么只报流关闭？</span></span><br><span class="line">                    <span class="comment">//因为这个是私有方法，而且只会被read()用，而read()是线程安全的，所以fill的方法其实只会在单线程下访问 </span></span><br><span class="line">                    <span class="comment">//而多线程能影响到buffer引用变化的只有close方法                  </span></span><br><span class="line">                &#125;</span><br><span class="line">                buffer = nbuf;</span><br><span class="line">            &#125;</span><br><span class="line">        count = pos; </span><br><span class="line">        <span class="keyword">int</span> n = getInIfOpen().read(buffer, pos, buffer.length - pos);</span><br><span class="line">        <span class="keyword">if</span> (n &gt; <span class="number">0</span>)</span><br><span class="line">            count = n + pos;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h5 id="close-1"><a href="#close-1" class="headerlink" title="close()"></a>close()</h5><p>流关闭除了调用inputStream的close()外，还讲buff数组设置为null。buff是否为null，这也是前面很多方法判断流是否关闭的原因了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">       <span class="keyword">byte</span>[] buffer;</span><br><span class="line">       <span class="keyword">while</span> ( (buffer = buf) != <span class="keyword">null</span>) &#123;</span><br><span class="line">           <span class="keyword">if</span> (bufUpdater.compareAndSet(<span class="keyword">this</span>, buffer, <span class="keyword">null</span>)) &#123;</span><br><span class="line">               InputStream input = in;</span><br><span class="line">               in = <span class="keyword">null</span>;</span><br><span class="line">               <span class="keyword">if</span> (input != <span class="keyword">null</span>)</span><br><span class="line">                   input.close();</span><br><span class="line">               <span class="keyword">return</span>;</span><br><span class="line">           &#125;</span><br><span class="line">           <span class="comment">// Else retry in case a new buf was CASed in fill()</span></span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>这个方法可以在read()在阻塞方法的情况下保证流的关闭，因为不需要获取对象锁。<br>buffer是volatile的，这里用一个局部变量获取，如果volatile buffer变了，这里的局部变量是否会不会变，所以这快多了一个while（(buffer = buf) != null）去判断，保障buffer可以设置成功，关闭流</p>
+<h3 id="ByteArrayInputStream"><a href="#ByteArrayInputStream" class="headerlink" title="ByteArrayInputStream"></a>ByteArrayInputStream</h3><p>ByteArrayInputStream本质就将一个BtyeArray当成一个输入源，看它的构造方法，流的读取操作其实就是数组的读操作，非常简单<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function"><span class="keyword">public</span> <span class="title">ByteArrayInputStream</span><span class="params">(<span class="keyword">byte</span> buf[])</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.buf = buf;</span><br><span class="line">        <span class="keyword">this</span>.pos = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">this</span>.count = buf.length;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">int</span> <span class="title">read</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (pos &lt; count) ? (buf[pos++] &amp; <span class="number">0xff</span>) : -<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">int</span> <span class="title">read</span><span class="params">(<span class="keyword">byte</span> b[], <span class="keyword">int</span> off, <span class="keyword">int</span> len)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (b == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (off &lt; <span class="number">0</span> || len &lt; <span class="number">0</span> || len &gt; b.length - off) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IndexOutOfBoundsException();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (pos &gt;= count) &#123;</span><br><span class="line">            <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> avail = count - pos;</span><br><span class="line">        <span class="keyword">if</span> (len &gt; avail) &#123;</span><br><span class="line">            len = avail;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (len &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        System.arraycopy(buf, pos, b, off, len);</span><br><span class="line">        pos += len;</span><br><span class="line">        <span class="keyword">return</span> len;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="OutputStream"><a href="#OutputStream" class="headerlink" title="OutputStream"></a>OutputStream</h3><p>有了前面InputStream的基础，下面的OutputStream就简单很多<br>输出流最重要是两个东西，write(int b)和flush(),和InputStream类似，流是一个一个字节读的，写的时候也是一个个写的。write的int类型b会强制转换成byte类型。<br>另外为什么会有flush这个方法？为了提高io的效率，我们一般是在读取了一定字节数后才开始执行写操作，比如buffedOutputStream，只有在buff数组满了后才会读取下面的字节，相当于写操作被阻塞了，而flush方法就是打破这个阻塞而设立的。执行这个方法就是强制执行写操作，清空缓冲区的字节。<br>所以一般关闭(close)输出流时，应先刷新(flush)换冲的输出流，这样缓冲区的数据也不会丢失。也就是“迫使所有缓冲的输出数据被写出到底层输出流中”</p>
+<h4 id="write-int-b"><a href="#write-int-b" class="headerlink" title="write(int b)"></a>write(int b)</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">write</span><span class="params">(<span class="keyword">int</span> b)</span> <span class="keyword">throws</span> IOException</span>;</span><br></pre></td></tr></table></figure>
+<h4 id="write-byte-b-int-off-int-len"><a href="#write-byte-b-int-off-int-len" class="headerlink" title="write(byte b[], int off, int len)"></a>write(byte b[], int off, int len)</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">write</span><span class="params">(<span class="keyword">byte</span> b[], <span class="keyword">int</span> off, <span class="keyword">int</span> len)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (b == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> ((off &lt; <span class="number">0</span>) || (off &gt; b.length) || (len &lt; <span class="number">0</span>) ||</span><br><span class="line">                   ((off + len) &gt; b.length) || ((off + len) &lt; <span class="number">0</span>)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IndexOutOfBoundsException();</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (len == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span> ; i &lt; len ; i++) &#123;</span><br><span class="line">            write(b[off + i]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h4 id="flush"><a href="#flush" class="headerlink" title="flush"></a>flush</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">flush</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//BuffedOutputStream的实现</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">flush</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        flushBuffer();</span><br><span class="line">        out.flush();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Flush the internal buffer */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">flushBuffer</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (count &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            out.write(buf, <span class="number">0</span>, count);</span><br><span class="line">            count = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Closeable、Flushable-interface"><a href="#Closeable、Flushable-interface" class="headerlink" title="Closeable、Flushable  interface"></a>Closeable、Flushable  interface</h3><p>接口都是定义!<br>继承了这些接口的流，都有实现相应的close(),flush()<br>而且在JDK7中新添加的带资源的try语句，提供了对资源的操作</p>
+<ul>
+<li>由带资源的try语句管理的资源必须是实现了AutoCloseable接口的类的对象。</li>
+<li>在try代码中声明的资源被隐式声明为fianl。</li>
+<li>通过使用分号分隔每个声明可以管理多个资源。<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HeheOutputStream</span> <span class="keyword">extends</span> <span class="title">ByteArrayOutputStream</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">HeheOutputStream</span><span class="params">(<span class="keyword">int</span> size)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">super</span>(size);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">flush</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">            System.out.println(<span class="string">"hehe flush!"</span>);</span><br><span class="line">            <span class="keyword">super</span>.flush();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">            System.out.println(<span class="string">"hehe close!"</span>);</span><br><span class="line">            <span class="keyword">super</span>.close();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> (HeheOutputStream outputStream = <span class="keyword">new</span> HeheOutputStream(<span class="number">24</span>);) &#123;</span><br><span class="line">            outputStream.write(<span class="string">"hehe"</span>.getBytes(), <span class="number">0</span>, <span class="number">4</span>);</span><br><span class="line">            System.out.println(outputStream);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">   <span class="comment">//hehe</span></span><br><span class="line">  <span class="comment">//hehe close!</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>发现close方法被自动执行了。flush方法还是需要手动调用- -</p>
+<h3 id="序列化和反序列化"><a href="#序列化和反序列化" class="headerlink" title="序列化和反序列化"></a>序列化和反序列化</h3><h4 id="ObjectInputStream-amp-ObjectOutputStream"><a href="#ObjectInputStream-amp-ObjectOutputStream" class="headerlink" title="ObjectInputStream &amp; ObjectOutputStream"></a>ObjectInputStream &amp; ObjectOutputStream</h4><blockquote>
+<p>serialVersionUID 是用于记录class文件的版本信息的，这个数字是JVM通过一个类的类名、成员、包名、工程名算出的一个数字。相当于一个索引，如果反序列化时发现它的UID与在项目的类，直接反序列化成相应的类</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DzzObject</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = -<span class="number">548199098184506173L</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//指定了UID后，新增这个变量不影响反序列化</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">long</span> <span class="title">getSerialVersionUID</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> serialVersionUID;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> getName() == <span class="keyword">null</span> ? <span class="string">"no name"</span> : getName();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> DzzObject dzzObject = <span class="keyword">new</span> DzzObject().setName(<span class="string">"dzz"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">input</span><span class="params">()</span> <span class="keyword">throws</span> IOException, ClassNotFoundException </span>&#123;</span><br><span class="line">        ObjectInputStream in = <span class="keyword">new</span> ObjectInputStream(<span class="keyword">new</span> FileInputStream(<span class="string">"D:\\temp\\dzzObject.txt"</span>));</span><br><span class="line">        Object o = in.readObject();</span><br><span class="line">        System.out.println(o);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">output</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        ObjectOutputStream out = <span class="keyword">new</span> ObjectOutputStream(<span class="keyword">new</span> FileOutputStream(<span class="string">"D:\\temp\\dzzObject.txt"</span>));</span><br><span class="line">        out.writeObject(dzzObject);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="引用相关"><a href="#引用相关" class="headerlink" title="引用相关"></a>引用相关</h3><p><a href="https://blog.csdn.net/u014470581/article/details/62229611" target="_blank" rel="noopener">https://blog.csdn.net/u014470581/article/details/62229611</a><br><a href="http://www.importnew.com/21556.html" target="_blank" rel="noopener">http://www.importnew.com/21556.html</a><br><a href="https://my.oschina.net/fhd/blog/344961" target="_blank" rel="noopener">https://my.oschina.net/fhd/blog/344961</a><br><a href="https://blog.csdn.net/bjo2008cn/article/details/53888923" target="_blank" rel="noopener">https://blog.csdn.net/bjo2008cn/article/details/53888923</a></p>
+
+    </div>
+
+    
+
+    
+        <div class="post-tags">
+            <i class="fa fa-tags" aria-hidden="true"></i>
+            <a href="/tags/笔记/">#笔记</a> <a href="/tags/jdk/">#jdk</a> <a href="/tags/io/">#io</a>
+        </div>
+    
+
+    <!-- Comments -->
+    
+
+</div>
+        </section>
+
+    </div>
+</div>
+
+
+</div>
+
+<!-- Footer -->
+<div class="push"></div>
+
+<footer class="footer-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
+                <h2>About</h2>
+                <p>
+                    This theme was developed by <a href="https://github.com/klugjo">Jonathan Klughertz</a>. The source code is available on Github. Create Websites. Make Magic.
+                </p>
+            </div>
+            
+    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
+        <h2>Recent Posts</h2>
+        <ul>
+            
+            <li>
+                <a class="footer-post" href="/2018/12/19/rxjava碎碎念/">rxjava设计原理</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/09/17/rxjava设计原理/">rxjava设计原理</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/09/09/vertx-circuitBreadker源码解析/">vertx-circuitBreadker源码解析</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/27/vertx-httpserver源码解析/">vertx httpserver源码解析</a>
+            </li>
+            
+        </ul>
+    </div>
+
+
+
+            
+<div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 footer-categories">
+    <h2>Categories</h2>
+    <ul>
+        
+        <li>
+            <a class="footer-post" href="/categories/emotion/">emotion</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/j-u-c/">j.u.c</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/jdk/">jdk</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/netty/">netty</a>
+        </li>
+        
+    </ul>
+</div>
+
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="list-inline footer-social-icons">
+                    
+                    <li class="list-inline-item">
+                        <a href="https://github.com/klugjo/hexo-theme-alpha-dust">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-github"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://twitter.com/?lang=en">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-twitter"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.facebook.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-facebook"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.instagram.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-instagram"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://dribbble.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-dribbble"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://plus.google.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-google-plus"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.behance.net/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-behance"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://500px.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-500px"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="mailto:test@example.com">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-envelope-o"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="\#">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-rss"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="footer-copyright">
+                    @Untitled. All right reserved | Design & Hexo <a href="http://www.codeblocq.com/">Jonathan Klughertz</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- After footer scripts -->
+
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Tween Max -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/main.js"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>

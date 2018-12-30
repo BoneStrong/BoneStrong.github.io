@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="云是风的故事，要很轻很轻才行">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="ZouFeng">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="NIO之ByteBuffer与ByteBuf"/>
+    
+
+    <!--Open Graph Description-->
+    
+        <meta property="og:description" content="云是风的故事，要很轻很轻才行" />
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="zoufeng_blog"/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+    <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>NIO之ByteBuffer与ByteBuf - zoufeng_blog</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Google Analytics -->
+    
+
+
+</head>
+
+
+<body>
+
+<div class="bg-gradient"></div>
+<div class="bg-pattern"></div>
+
+<!-- Menu -->
+<!--Menu Links and Overlay-->
+<div class="menu-bg">
+    <div class="menu-container">
+        <ul>
+            
+            <li class="menu-item">
+                <a href="/">
+                    Home
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/archives">
+                    Archives
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/about.html">
+                    About
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/tags">
+                    Tags
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/categories">
+                    Categories
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/contact.html">
+                    Contact
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+<!--Hamburger Icon-->
+<nav>
+    <a href="#menu"></a>
+</nav>
+
+<div class="container">
+
+    <!-- Main Content -->
+    <div class="row">
+    <div class="col-sm-12">
+
+        <!--Title and Logo-->
+        <header>
+    <div class="logo">
+        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
+        
+    </div>
+</header>
+
+        <section class="main">
+            
+<div class="post">
+
+    <div class="post-header">
+        <h1 class="title">
+            <a href="/2018/06/13/NIO之ByteBuffer与ByteBuf/">
+                NIO之ByteBuffer与ByteBuf
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-06-13</span>
+            
+            
+            
+                <span class="category">
+                    <a href="/categories/jdk/">jdk</a>
+                </span>
+            
+        </div>
+    </div>
+	
+	<div class="entry" style="position:fixed;left:10px" >
+			<p class="show-toc-btn" id="show-toc-btn" onclick="showToc();" style="display:block">
+				<span class="btn-bg"></span>
+				<span class="btn-text">文章导航</span>
+			</p>
+		<div id="toc-article" class="toc-article" style="display:none">
+			<span id="toc-close" class="toc-close" title="隐藏导航" onclick="showBtn();">x</span>
+			<strong class="toc-title">文章目录</strong>
+			<ol class="post-toc"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#ByteBuffer"><span class="post-toc-number">1.</span> <span class="post-toc-text">ByteBuffer</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#几个重要的变量："><span class="post-toc-number">1.1.</span> <span class="post-toc-text">几个重要的变量：</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#buf的读写"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">buf的读写</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#flip"><span class="post-toc-number">1.2.1.</span> <span class="post-toc-text">flip()</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#clear"><span class="post-toc-number">1.2.2.</span> <span class="post-toc-text">clear()</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#DirectByteBuffer"><span class="post-toc-number">1.3.</span> <span class="post-toc-text">DirectByteBuffer</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#ByteBuf"><span class="post-toc-number">2.</span> <span class="post-toc-text">ByteBuf</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#引用相关"><span class="post-toc-number">3.</span> <span class="post-toc-text">引用相关</span></a></li></ol>
+		</div>
+		<script type="text/javascript">
+			function showToc(){
+				var toc_article = document.getElementById("toc-article");
+				var show_toc_btn = document.getElementById("show-toc-btn");
+				toc_article.setAttribute("style","display:block");
+				show_toc_btn.setAttribute("style","display:none");
+			};
+			function showBtn(){
+				var toc_article = document.getElementById("toc-article");
+				var show_toc_btn = document.getElementById("show-toc-btn");
+				toc_article.setAttribute("style","display:none");
+				show_toc_btn.setAttribute("style","display:block");
+			};
+		</script>
+	
+    </div>
+	
+	
+	<!-- 文章目录
+	<div class="entry" style="position:fixed;right:10px" >
+		<ol class="post-toc"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#ByteBuffer"><span class="post-toc-number">1.</span> <span class="post-toc-text">ByteBuffer</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#几个重要的变量："><span class="post-toc-number">1.1.</span> <span class="post-toc-text">几个重要的变量：</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#buf的读写"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">buf的读写</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#flip"><span class="post-toc-number">1.2.1.</span> <span class="post-toc-text">flip()</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#clear"><span class="post-toc-number">1.2.2.</span> <span class="post-toc-text">clear()</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#DirectByteBuffer"><span class="post-toc-number">1.3.</span> <span class="post-toc-text">DirectByteBuffer</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#ByteBuf"><span class="post-toc-number">2.</span> <span class="post-toc-text">ByteBuf</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#引用相关"><span class="post-toc-number">3.</span> <span class="post-toc-text">引用相关</span></a></li></ol>
+    </div> -->
+
+    <div class="content">
+
+        <!-- Gallery -->
+        
+
+        <!-- Post Content -->
+        <h3 id="ByteBuffer"><a href="#ByteBuffer" class="headerlink" title="ByteBuffer"></a>ByteBuffer</h3><h4 id="几个重要的变量："><a href="#几个重要的变量：" class="headerlink" title="几个重要的变量："></a>几个重要的变量：</h4><ul>
+<li><strong>position</strong> 当前位置的下标。默认0</li>
+<li><strong>mark</strong> 调用mark()保存的postion，可以提供重复读取的功能。 默认-1，没有被标记</li>
+<li><strong>limit</strong> 在Buffer上进行的<code>读写操作都不能越过这个下标</code>。当写数据到buffer中时，limit一般和capacity相等.当读数据时，limit代表buffer中有效数据的长度。</li>
+<li><strong>capacity</strong> buffer能放置的数据数目（没有说和数组的长度有关系）<blockquote>
+<p>mark &lt;= position &lt;= limit &lt;= capacity</p>
+</blockquote>
+</li>
+</ul>
+<a id="more"></a>
+<h4 id="buf的读写"><a href="#buf的读写" class="headerlink" title="buf的读写"></a>buf的读写</h4><p>jdk的bytebuff 是根据上面几个变量判断读写的范围<br>举个小demo<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        ByteBuffer buffer = ByteBuffer.allocate(<span class="number">100</span>);</span><br><span class="line">        String value = <span class="string">"hehe"</span>;</span><br><span class="line">        buffer.put(value.getBytes());</span><br><span class="line">        buffer.flip();<span class="comment">//读写切换</span></span><br><span class="line">        <span class="keyword">byte</span>[] vArray = <span class="keyword">new</span> <span class="keyword">byte</span>[buffer.remaining()];<span class="comment">//获取可读取的字节长度</span></span><br><span class="line">        buffer.get(vArray);<span class="comment">//读取缓存字节数组</span></span><br><span class="line">        System.out.println(<span class="keyword">new</span> String(vArray));</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<h5 id="flip"><a href="#flip" class="headerlink" title="flip()"></a>flip()</h5><p>flip()源码，本质其实就是用position和limit确认读取的字节起始和结尾位置，每次切换的时候变更首尾<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> Buffer <span class="title">flip</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        limit = position;</span><br><span class="line">        position = <span class="number">0</span>;</span><br><span class="line">        mark = -<span class="number">1</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>flip图示<br><img src="/img/jdk/nio/buf/jdk_nio_buf_flip.png" alt="Image text"></p>
+<h5 id="clear"><a href="#clear" class="headerlink" title="clear()"></a>clear()</h5><p>看源码很清晰，就是将pos设为0，limit设置为最大长度<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> Buffer <span class="title">clear</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        position = <span class="number">0</span>;</span><br><span class="line">        limit = capacity;</span><br><span class="line">        mark = -<span class="number">1</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line">`</span><br></pre></td></tr></table></figure></p>
+<h4 id="DirectByteBuffer"><a href="#DirectByteBuffer" class="headerlink" title="DirectByteBuffer"></a>DirectByteBuffer</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">DirectByteBuffer(<span class="keyword">int</span> cap) &#123;                   <span class="comment">// package-private</span></span><br><span class="line">       <span class="keyword">super</span>(-<span class="number">1</span>, <span class="number">0</span>, cap, cap);</span><br><span class="line">       <span class="keyword">boolean</span> pa = VM.isDirectMemoryPageAligned();</span><br><span class="line">       <span class="keyword">int</span> ps = Bits.pageSize();</span><br><span class="line">       <span class="keyword">long</span> size = Math.max(<span class="number">1L</span>, (<span class="keyword">long</span>)cap + (pa ? ps : <span class="number">0</span>));</span><br><span class="line">       Bits.reserveMemory(size, cap);</span><br><span class="line"></span><br><span class="line">       <span class="keyword">long</span> base = <span class="number">0</span>;</span><br><span class="line">       <span class="keyword">try</span> &#123;</span><br><span class="line">           base = unsafe.allocateMemory(size);</span><br><span class="line">       &#125; <span class="keyword">catch</span> (OutOfMemoryError x) &#123;</span><br><span class="line">           Bits.unreserveMemory(size, cap);</span><br><span class="line">           <span class="keyword">throw</span> x;</span><br><span class="line">       &#125;</span><br><span class="line">       unsafe.setMemory(base, size, (<span class="keyword">byte</span>) <span class="number">0</span>);</span><br><span class="line">       <span class="keyword">if</span> (pa &amp;&amp; (base % ps != <span class="number">0</span>)) &#123;</span><br><span class="line">           <span class="comment">// Round up to page boundary</span></span><br><span class="line">           address = base + ps - (base &amp; (ps - <span class="number">1</span>));</span><br><span class="line">       &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">           address = base;</span><br><span class="line">       &#125;</span><br><span class="line">       cleaner = Cleaner.create(<span class="keyword">this</span>, <span class="keyword">new</span> Deallocator(base, size, cap));<span class="comment">// step3       att = null;</span></span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>这里的Cleaner看源码是继承了幻影引用，为GC提供了帮助<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Cleaner</span> <span class="keyword">extends</span> <span class="title">PhantomReference</span>&lt;<span class="title">Object</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ReferenceQueue&lt;Object&gt; dummyQueue = <span class="keyword">new</span> ReferenceQueue();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Cleaner first = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">private</span> Cleaner next = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">private</span> Cleaner prev = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Runnable thunk;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">synchronized</span> Cleaner <span class="title">add</span><span class="params">(Cleaner var0)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (first != <span class="keyword">null</span>) &#123;</span><br><span class="line">            var0.next = first;</span><br><span class="line">            first.prev = var0;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        first = var0;</span><br><span class="line">        <span class="keyword">return</span> var0;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="ByteBuf"><a href="#ByteBuf" class="headerlink" title="ByteBuf"></a>ByteBuf</h3><h3 id="引用相关"><a href="#引用相关" class="headerlink" title="引用相关"></a>引用相关</h3><p><a href="https://blog.csdn.net/dfdsggdgg/article/details/51533287" target="_blank" rel="noopener">https://blog.csdn.net/dfdsggdgg/article/details/51533287</a></p>
+
+    </div>
+
+    
+
+    
+        <div class="post-tags">
+            <i class="fa fa-tags" aria-hidden="true"></i>
+            <a href="/tags/笔记/">#笔记</a> <a href="/tags/jdk/">#jdk</a> <a href="/tags/nio/">#nio</a>
+        </div>
+    
+
+    <!-- Comments -->
+    
+
+</div>
+        </section>
+
+    </div>
+</div>
+
+
+</div>
+
+<!-- Footer -->
+<div class="push"></div>
+
+<footer class="footer-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
+                <h2>About</h2>
+                <p>
+                    This theme was developed by <a href="https://github.com/klugjo">Jonathan Klughertz</a>. The source code is available on Github. Create Websites. Make Magic.
+                </p>
+            </div>
+            
+    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
+        <h2>Recent Posts</h2>
+        <ul>
+            
+            <li>
+                <a class="footer-post" href="/2018/12/19/rxjava碎碎念/">rxjava设计原理</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/09/17/rxjava设计原理/">rxjava设计原理</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/09/09/vertx-circuitBreadker源码解析/">vertx-circuitBreadker源码解析</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/27/vertx-httpserver源码解析/">vertx httpserver源码解析</a>
+            </li>
+            
+        </ul>
+    </div>
+
+
+
+            
+<div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 footer-categories">
+    <h2>Categories</h2>
+    <ul>
+        
+        <li>
+            <a class="footer-post" href="/categories/emotion/">emotion</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/j-u-c/">j.u.c</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/jdk/">jdk</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/netty/">netty</a>
+        </li>
+        
+    </ul>
+</div>
+
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="list-inline footer-social-icons">
+                    
+                    <li class="list-inline-item">
+                        <a href="https://github.com/klugjo/hexo-theme-alpha-dust">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-github"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://twitter.com/?lang=en">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-twitter"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.facebook.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-facebook"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.instagram.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-instagram"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://dribbble.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-dribbble"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://plus.google.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-google-plus"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.behance.net/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-behance"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://500px.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-500px"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="mailto:test@example.com">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-envelope-o"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="\#">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-rss"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="footer-copyright">
+                    @Untitled. All right reserved | Design & Hexo <a href="http://www.codeblocq.com/">Jonathan Klughertz</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- After footer scripts -->
+
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Tween Max -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/main.js"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>

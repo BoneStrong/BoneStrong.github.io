@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="摘要,Thread状态">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="ZouFeng">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="Thread状态详解"/>
+    
+
+    <!--Open Graph Description-->
+    
+        <meta property="og:description" content="摘要,Thread状态" />
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="zoufeng_blog"/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+    <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>Thread状态详解 - zoufeng_blog</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Google Analytics -->
+    
+
+
+</head>
+
+
+<body>
+
+<div class="bg-gradient"></div>
+<div class="bg-pattern"></div>
+
+<!-- Menu -->
+<!--Menu Links and Overlay-->
+<div class="menu-bg">
+    <div class="menu-container">
+        <ul>
+            
+            <li class="menu-item">
+                <a href="/">
+                    Home
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/archives">
+                    Archives
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/about.html">
+                    About
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/tags">
+                    Tags
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/categories">
+                    Categories
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/contact.html">
+                    Contact
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+<!--Hamburger Icon-->
+<nav>
+    <a href="#menu"></a>
+</nav>
+
+<div class="container">
+
+    <!-- Main Content -->
+    <div class="row">
+    <div class="col-sm-12">
+
+        <!--Title and Logo-->
+        <header>
+    <div class="logo">
+        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
+        
+    </div>
+</header>
+
+        <section class="main">
+            
+<div class="post">
+
+    <div class="post-header">
+        <h1 class="title">
+            <a href="/2018/06/02/Thread状态详解/">
+                Thread状态详解
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-06-02</span>
+            
+            
+            
+                <span class="category">
+                    <a href="/categories/jdk/">jdk</a>
+                </span>
+            
+        </div>
+    </div>
+	
+	<div class="entry" style="position:fixed;left:10px" >
+			<p class="show-toc-btn" id="show-toc-btn" onclick="showToc();" style="display:block">
+				<span class="btn-bg"></span>
+				<span class="btn-text">文章导航</span>
+			</p>
+		<div id="toc-article" class="toc-article" style="display:none">
+			<span id="toc-close" class="toc-close" title="隐藏导航" onclick="showBtn();">x</span>
+			<strong class="toc-title">文章目录</strong>
+			<ol class="post-toc"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#一、线程状态转换图"><span class="post-toc-number">1.</span> <span class="post-toc-text">一、线程状态转换图</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#二、线程的几种状态"><span class="post-toc-number">2.</span> <span class="post-toc-text">二、线程的几种状态</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#NEW"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">NEW</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#RUNNABLE"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">RUNNABLE</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#WAITING-TIMED-WAITING"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">WAITING/TIMED_WAITING</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Object-wait-、Thread-join"><span class="post-toc-number">2.3.1.</span> <span class="post-toc-text">Object.wait()、Thread.join()</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Thread-sleep"><span class="post-toc-number">2.3.2.</span> <span class="post-toc-text">Thread.sleep()</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#LockSupport-park"><span class="post-toc-number">2.3.3.</span> <span class="post-toc-text">LockSupport.park()</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#BLOCKED"><span class="post-toc-number">2.4.</span> <span class="post-toc-text">BLOCKED</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#TERMINATED"><span class="post-toc-number">2.5.</span> <span class="post-toc-text">TERMINATED</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#三、线程中断"><span class="post-toc-number">3.</span> <span class="post-toc-text">三、线程中断</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#interrupt"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">interrupt</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#相关引用及参考"><span class="post-toc-number">4.</span> <span class="post-toc-text">相关引用及参考</span></a></li></ol>
+		</div>
+		<script type="text/javascript">
+			function showToc(){
+				var toc_article = document.getElementById("toc-article");
+				var show_toc_btn = document.getElementById("show-toc-btn");
+				toc_article.setAttribute("style","display:block");
+				show_toc_btn.setAttribute("style","display:none");
+			};
+			function showBtn(){
+				var toc_article = document.getElementById("toc-article");
+				var show_toc_btn = document.getElementById("show-toc-btn");
+				toc_article.setAttribute("style","display:none");
+				show_toc_btn.setAttribute("style","display:block");
+			};
+		</script>
+	
+    </div>
+	
+	
+	<!-- 文章目录
+	<div class="entry" style="position:fixed;right:10px" >
+		<ol class="post-toc"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#一、线程状态转换图"><span class="post-toc-number">1.</span> <span class="post-toc-text">一、线程状态转换图</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#二、线程的几种状态"><span class="post-toc-number">2.</span> <span class="post-toc-text">二、线程的几种状态</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#NEW"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">NEW</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#RUNNABLE"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">RUNNABLE</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#WAITING-TIMED-WAITING"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">WAITING/TIMED_WAITING</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Object-wait-、Thread-join"><span class="post-toc-number">2.3.1.</span> <span class="post-toc-text">Object.wait()、Thread.join()</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Thread-sleep"><span class="post-toc-number">2.3.2.</span> <span class="post-toc-text">Thread.sleep()</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#LockSupport-park"><span class="post-toc-number">2.3.3.</span> <span class="post-toc-text">LockSupport.park()</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#BLOCKED"><span class="post-toc-number">2.4.</span> <span class="post-toc-text">BLOCKED</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#TERMINATED"><span class="post-toc-number">2.5.</span> <span class="post-toc-text">TERMINATED</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#三、线程中断"><span class="post-toc-number">3.</span> <span class="post-toc-text">三、线程中断</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#interrupt"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">interrupt</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#相关引用及参考"><span class="post-toc-number">4.</span> <span class="post-toc-text">相关引用及参考</span></a></li></ol>
+    </div> -->
+
+    <div class="content">
+
+        <!-- Gallery -->
+        
+
+        <!-- Post Content -->
+        <h3 id="一、线程状态转换图"><a href="#一、线程状态转换图" class="headerlink" title="一、线程状态转换图"></a>一、线程状态转换图</h3><a id="more"></a>
+<p>别人总结的一张图，画的很清晰<br>　<img src="/img/jdk/lang/thread/thread_state.png" alt="Image text"></p>
+<p>对应Thread.State的几种状态。</p>
+<h3 id="二、线程的几种状态"><a href="#二、线程的几种状态" class="headerlink" title="二、线程的几种状态"></a>二、线程的几种状态</h3><h4 id="NEW"><a href="#NEW" class="headerlink" title="NEW"></a>NEW</h4><p>这个很好理解，就是new Thread（）对象构造函数构造好时的线程状态</p>
+<h4 id="RUNNABLE"><a href="#RUNNABLE" class="headerlink" title="RUNNABLE"></a>RUNNABLE</h4><p>这种状态是线程有执行权，但是没有获取cpu时间片执行的状态，获得时间片是Running状态。看上面的流程图可以知道在4种情况下变成RUNNABLE状态：</p>
+<ul>
+<li>1.调用start()</li>
+<li>2.running的线程调用yield()方法，交出时间片，让CPU去执行其他的线程（只能让拥有相同优先级的线程有获取CPU执行时间的机会，且不会释放锁）</li>
+<li>3.阻塞状态（BLOCKED）结束，准备执行</li>
+<li>4.等待状态结束（WAITING/TIMED_WAITING）,准备执行<h4 id="WAITING-TIMED-WAITING"><a href="#WAITING-TIMED-WAITING" class="headerlink" title="WAITING/TIMED_WAITING"></a>WAITING/TIMED_WAITING</h4>当一个线程等待另一个线程通知调度器一个条件时，该线程进入等待状态。它的特点是需要等待另一个线程显式地唤醒自己，实现灵活，语义更丰富，可响应中断。<br>将线程进入这个状态有几种方式：<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">wait</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        wait(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title">wait</span><span class="params">(<span class="keyword">long</span> timeout)</span> <span class="keyword">throws</span> InterruptedException</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">join</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        join(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">join</span><span class="params">(<span class="keyword">long</span> millis)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> base = System.currentTimeMillis();</span><br><span class="line">        <span class="keyword">long</span> now = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (millis &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"timeout value is negative"</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (millis == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">while</span> (isAlive()) &#123;</span><br><span class="line">                wait(<span class="number">0</span>);<span class="comment">//可以看到Thread.join()的本质还是Object的wait()           &#125;</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">while</span> (isAlive()) &#123;</span><br><span class="line">                <span class="keyword">long</span> delay = millis - now;</span><br><span class="line">                <span class="keyword">if</span> (delay &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                wait(delay);</span><br><span class="line">                now = System.currentTimeMillis() - base;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title">park</span><span class="params">(<span class="keyword">boolean</span> var1, <span class="keyword">long</span> var2)</span></span>;<span class="comment">//park不响应中断，只保留中断标识</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h5 id="Object-wait-、Thread-join"><a href="#Object-wait-、Thread-join" class="headerlink" title="Object.wait()、Thread.join()"></a>Object.wait()、Thread.join()</h5><p>Thread.join()<code>[本质是Object.wait()]</code><br>如果调用某个对象的wait()方法，当前线程必须拥有这个对象的monitor（即锁），因此调用wait()方法必须在同步块或者同步方法中进行（synchronized块或者synchronized方法）。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">synchronized</span> (object) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                object.wait();</span><br><span class="line">                ...</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure></p>
+<p>调用某个对象的wait()方法，相当于让当前线程交出此对象的monitor，然后进入等待状态，等待后续再次获得此对象的锁。</p>
+<h5 id="Thread-sleep"><a href="#Thread-sleep" class="headerlink" title="Thread.sleep()"></a>Thread.sleep()</h5><p>Thread类中的sleep方法使当前线程暂停执行一段时间，从而让其他线程有机会继续执行，但它并不释放对象锁.<br>插篇写sleep比较有意思的文章<a href="https://www.cnblogs.com/bamu/archive/2013/03/14/2959663.html" target="_blank" rel="noopener">https://www.cnblogs.com/bamu/archive/2013/03/14/2959663.html</a></p>
+<h5 id="LockSupport-park"><a href="#LockSupport-park" class="headerlink" title="LockSupport.park()"></a>LockSupport.park()</h5><p>LockSupport并不需要获取对象的监视器，本质是使用了Unsafe.park()。</p>
+<p>每次LockSupport.unpark给线程1个“许可”<strong>(最多也只能是1)</strong>。而park是消耗1个并返回，如果没有许可则会阻塞线程，直到线程重新获得许可。</p>
+<p>值得一提的是park/unpark模型真正解耦了线程之间的同步，线程之间不再需要一个Object或者其它变量来存储状态，不再需要关心对方的状态，只关心许可的数量。所以使用起来特别方便</p>
+<h4 id="BLOCKED"><a href="#BLOCKED" class="headerlink" title="BLOCKED"></a>BLOCKED</h4><p>这个状态jdk源码注释其实说的很直接,基本上说就是等待获取synchronized 快或方法的monitor 锁的状态<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Thread state for a thread blocked waiting for a monitor lock.</span></span><br><span class="line"><span class="comment">         * A thread in the blocked state is waiting for a monitor lock</span></span><br><span class="line"><span class="comment">         * to enter a synchronized block/method or</span></span><br><span class="line"><span class="comment">         * reenter a synchronized block/method after calling</span></span><br><span class="line"><span class="comment">         * &#123;<span class="doctag">@link</span> Object#wait() Object.wait&#125;.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        BLOCKED,</span><br></pre></td></tr></table></figure></p>
+<h4 id="TERMINATED"><a href="#TERMINATED" class="headerlink" title="TERMINATED"></a>TERMINATED</h4><p>线程执行完毕的状态。【其实这里还待补充，考虑到线程池的线程状态，占坑，后续补上】</p>
+<h3 id="三、线程中断"><a href="#三、线程中断" class="headerlink" title="三、线程中断"></a>三、线程中断</h3><p>如果线程被阻塞或是等待，它便不能核查共享变量，也就不能停止。这在许多情况下会发生，例如调用 Object.wait()、ServerSocket.accept()和DatagramSocket.receive()时，他们都可能永久的阻塞线程。即使发生超时，在超时期满之前持续等待也是不可行和不适当的，所以，要使用某种机制使得线程更早地退出被阻塞/等待的状态。</p>
+<p>一般线程通过中断标识来实现thread的中断，退出阻塞或是等待的状态。</p>
+<h4 id="interrupt"><a href="#interrupt" class="headerlink" title="interrupt"></a>interrupt</h4><p>interrupt()<strong>仅仅是对线程标记了线程的中断状态</strong>，并不能中断线程运行。</p>
+<p>线程只是根据中断状态的标识对线程进行管理，比如线程在等待的时候对线程中断处理：</p>
+<p>有两类waiting状态，对应不同的中断处理</p>
+<ul>
+<li>1.Object.wait()、Thread.join()和Thread.sleep()，会不停轮询线程的中断状态，如果发现被标记了中断状态，则throw InterruptException异常，并会重置线程中断标志位为false。</li>
+<li>2.LockSupport.park() 在park状态中发现被标记了中断状态，则唤醒线程，不会重置中断状态</li>
+</ul>
+<p>可以通过以下三种方式来判断线程中断状态：</p>
+<ul>
+<li><strong>isInterrupted()</strong> 读取线程的中断标志位，并不会重置。</li>
+<li><strong>interrupted()</strong> 读取线程的中断标志位，并会重置为false.</li>
+<li><strong>throw InterruptException</strong> 抛出该异常的同时，会重置中断标志位为false。</li>
+</ul>
+<h3 id="相关引用及参考"><a href="#相关引用及参考" class="headerlink" title="相关引用及参考"></a>相关引用及参考</h3><p><a href="https://blog.csdn.net/hengyunabc/article/details/28126139" target="_blank" rel="noopener">https://blog.csdn.net/hengyunabc/article/details/28126139</a></p>
+
+    </div>
+
+    
+
+    
+        <div class="post-tags">
+            <i class="fa fa-tags" aria-hidden="true"></i>
+            <a href="/tags/笔记/">#笔记</a> <a href="/tags/jdk/">#jdk</a> <a href="/tags/thread/">#thread</a>
+        </div>
+    
+
+    <!-- Comments -->
+    
+
+</div>
+        </section>
+
+    </div>
+</div>
+
+
+</div>
+
+<!-- Footer -->
+<div class="push"></div>
+
+<footer class="footer-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
+                <h2>About</h2>
+                <p>
+                    This theme was developed by <a href="https://github.com/klugjo">Jonathan Klughertz</a>. The source code is available on Github. Create Websites. Make Magic.
+                </p>
+            </div>
+            
+    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
+        <h2>Recent Posts</h2>
+        <ul>
+            
+            <li>
+                <a class="footer-post" href="/2018/12/19/rxjava碎碎念/">rxjava设计原理</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/09/17/rxjava设计原理/">rxjava设计原理</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/09/09/vertx-circuitBreadker源码解析/">vertx-circuitBreadker源码解析</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2018/08/27/vertx-httpserver源码解析/">vertx httpserver源码解析</a>
+            </li>
+            
+        </ul>
+    </div>
+
+
+
+            
+<div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 footer-categories">
+    <h2>Categories</h2>
+    <ul>
+        
+        <li>
+            <a class="footer-post" href="/categories/emotion/">emotion</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/j-u-c/">j.u.c</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/jdk/">jdk</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/netty/">netty</a>
+        </li>
+        
+    </ul>
+</div>
+
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="list-inline footer-social-icons">
+                    
+                    <li class="list-inline-item">
+                        <a href="https://github.com/klugjo/hexo-theme-alpha-dust">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-github"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://twitter.com/?lang=en">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-twitter"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.facebook.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-facebook"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.instagram.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-instagram"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://dribbble.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-dribbble"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://plus.google.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-google-plus"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.behance.net/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-behance"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://500px.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-500px"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="mailto:test@example.com">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-envelope-o"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="\#">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-rss"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="footer-copyright">
+                    @Untitled. All right reserved | Design & Hexo <a href="http://www.codeblocq.com/">Jonathan Klughertz</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- After footer scripts -->
+
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Tween Max -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/main.js"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>
